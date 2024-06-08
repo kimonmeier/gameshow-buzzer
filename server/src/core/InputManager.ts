@@ -52,7 +52,7 @@ export default class InputManager {
                 this.connection.broadcast({
                     type: ServerEvents.BUZZER_PRESSED_BY_PLAYER,
                     playerId: client.uuid,
-                    time: m.time
+                    time: m.time > Date.now() ? Date.now() : m.time
                 })
                 break;
             case ClientEvents.GAMEMASTER_RELEASE_BUZZER:
