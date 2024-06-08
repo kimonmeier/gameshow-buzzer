@@ -25,5 +25,17 @@ interface PlayerPointsChangedMessage {
     points: number,
 }
 
+interface PlayerBuzzerPressedMessage {
+    type: ServerEvents.BUZZER_PRESSED_BY_PLAYER,
+    playerId: string
+}
 
-export type ServerMessage = PlayerJoinedMessage | PlayerLeftMessage | ServerClosedMessage | ServerPingMessage | PlayerPointsChangedMessage;
+interface BuzzerReleasedMessage {
+    type: ServerEvents.BUZZER_RELEASED
+}
+
+type BuzzerEventType = PlayerBuzzerPressedMessage | BuzzerReleasedMessage;
+type PlayerEventType = PlayerJoinedMessage | PlayerLeftMessage | PlayerPointsChangedMessage;
+type ServerEventType = ServerClosedMessage | ServerPingMessage;
+
+export type ServerMessage = PlayerEventType | ServerEventType | BuzzerEventType;
