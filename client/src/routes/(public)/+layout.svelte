@@ -8,9 +8,9 @@
 	import answerRightSoundFile from "$lib/assets/right_answer.wav";
 	import answerWrongSoundFile from "$lib/assets/wrong_answer.wav";
 
-	$buzzerSound = new Sound(buzzerSoundFile, {volume: 0.4});
-	$answerRightSound = new Sound(answerRightSoundFile, {volume: 0.6});
-	$answerWrongSound = new Sound(answerWrongSoundFile, {volume: 0.5});
+	$buzzerSound = new Sound(buzzerSoundFile, {volume: 0});
+	$answerRightSound = new Sound(answerRightSoundFile, {volume: 0});
+	$answerWrongSound = new Sound(answerWrongSoundFile, {volume: 0});
 
 	onMount(() => {
 		App.getInstance().startApp();
