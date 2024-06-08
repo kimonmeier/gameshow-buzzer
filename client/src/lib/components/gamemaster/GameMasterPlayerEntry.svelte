@@ -32,7 +32,7 @@
     }
 
     function copyLinkForObs() {
-        navigator.clipboard.writeText(location.host + "/buzzer/public?id=" + player.id);
+        navigator.clipboard.writeText(location.host + "/buzzer/public.html?id=" + player.id);
     }
 
     $: isFirstBuzzer = $buzzers.filter(x => x.buzzerTime != null).sort(x => x.buzzerTime!).at(0)?.playerId == player.id;
