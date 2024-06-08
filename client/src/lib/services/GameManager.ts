@@ -2,6 +2,8 @@ import type { ClientMessage } from "gameshow-lib/messages/ClientMessage";
 import WebSocketClient from "./WebSocketClient";
 import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 import type { ServerMessage } from "gameshow-lib/messages/ServerMessage";
+import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
+import { players } from "$lib/store/PlayerStore";
 
 export default class App {
     private static instance: App;
@@ -56,6 +58,47 @@ export default class App {
         console.log(m);
 
         switch (m.type) {
+            case ServerEvents.PLAYER_JOINED:
+                players.update(x => [...x, { id: m.id, name: m.name, input: '', isBuzzerPressed: false, isInputLocked: false, points: 0 }]);
+                break;
+            
+            case ServerEvents.PLAYER_LEFT:
+                players.update(x => x.filter(x => x.id != m.id ));
+                break;
+
+            case ServerEvents.PLAYER_POINTS_CHANGED:
+                players.update(x => {
+                    let player = x.find(z => z.id == m.playerId);
+                    if (!player) {
+                        throw Error("Points changed for an unkown player");
+                    }
+
+                    player.points = m.points;
+                    return x;
+                })
+                break;
+            case ServerEvents.BUZZER_PRESSED_BY_PLAYER:
+                players.update(x => {
+                    let player = x.find(z => z.id == m.playerId);
+                    if (!player) {
+                        throw Error("Points changed for an unkown player");
+                    }
+
+                    player.isBuzzerPressed = true;
+                    return x;
+                })
+                break;
+            case ServerEvents.BUZZER_RELEASED:
+                players.update(x => {
+                    x.forEach(player => {
+                        player.isBuzzerPressed = false;
+                    });
+                    return x;
+                })
+                break;
+            case ServerEvents.SERVER_PING:
+                console.log("Player pinged");
+                break;
             default:
                 throw new Error("Need to implement this shit!");
         }
