@@ -55,8 +55,8 @@ export default class WebSocketClient {
 		this.lastPingAnswer = Date.now();
 		this.interval.push(setInterval(() => {
 			this.send({ type: ClientEvents.SERVER_PING, date: Date.now() });
-		}, 500));
-		this.interval.push(setInterval(() => this.checkPingAnswer(), 1000));
+		}, 300));
+		this.interval.push(setInterval(() => this.checkPingAnswer(), 500));
 
 		this.isReconnecting = true;
 	}
