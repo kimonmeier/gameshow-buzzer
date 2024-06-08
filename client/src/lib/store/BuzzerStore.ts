@@ -45,3 +45,4 @@ function createBuzzerStore(): BuzzerStore {
 }
 
 export const buzzers = createBuzzerStore();
+export const isBuzzerLocked = writable<boolean>(false);

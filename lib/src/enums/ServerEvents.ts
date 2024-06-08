@@ -20,6 +20,8 @@ export enum ServerEvents {
     BUZZER_PRESSED_BY_PLAYER,
     /// Buzzer wurde released
     BUZZER_RELEASED,
+    /// Buzzer wurde gelocked
+    BUZZER_LOCKED,
 
     
 

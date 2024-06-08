@@ -13,6 +13,10 @@ interface GameMasterReleaseBuzzerMessage {
     type: ClientEvents.GAMEMASTER_RELEASE_BUZZER,
 }
 
+interface GameMasterLockBuzzerMessage {
+    type: ClientEvents.GAMEMASTER_LOCK_BUZZER,
+}
+
 interface GameMasterReleaseInputsMessage {
     type: ClientEvents.GAMEMASTER_RELEASE_INPUTS,
     playerId?: string,
@@ -63,7 +67,7 @@ interface RequestGamemasterMessage {
 
 type GameMasterAnswerMessageType = GameMasterAnswerRightMessage | GameMasterAnswerWrongMessage;
 type GameMasterPointsMessageType = GameMasterIncreasePointsMessage | GameMasterDecreasePointsMessage;
-type GameMasterInputMessageType = GameMasterReleaseInputsMessage | GameMasterLockInputsMessage;
+type GameMasterInputMessageType = GameMasterReleaseInputsMessage | GameMasterLockInputsMessage | GameMasterLockBuzzerMessage;
 type GameMasterMessageType = GameMasterReleaseBuzzerMessage | GameMasterInputMessageType | GameMasterPointsMessageType | GameMasterAnswerMessageType;
 
 type PlayerMessageType = PlayerConnectingMessage | PlayerLeavingMessage | PlayerInputChangedMessage | PlayerBuzzerPressedMessage;

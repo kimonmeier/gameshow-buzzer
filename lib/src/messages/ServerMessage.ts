@@ -56,6 +56,10 @@ interface BuzzerReleasedMessage {
     type: ServerEvents.BUZZER_RELEASED
 }
 
+interface BuzzerLockedMessage {
+    type: ServerEvents.BUZZER_LOCKED
+}
+
 interface InputsLockedMessage {
     type: ServerEvents.INPUTS_LOCKED;
 }
@@ -79,7 +83,7 @@ type AnswerEventType = AnswerRightMessage | AnswerWrongMessage;
 
 type InputEventType = InputsLockedMessage | InputsReleasedMessage;
 
-type BuzzerEventType = PlayerBuzzerPressedMessage | BuzzerReleasedMessage;
+type BuzzerEventType = PlayerBuzzerPressedMessage | BuzzerReleasedMessage | BuzzerLockedMessage;
 
 type ServerEventType = ServerClosedMessage | ServerPingMessage;
 

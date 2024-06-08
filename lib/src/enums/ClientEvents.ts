@@ -8,6 +8,9 @@ export enum ClientEvents {
 
     /// This event describes what happens when the gamemaster releases the buzzer
     GAMEMASTER_RELEASE_BUZZER,
+
+    /// This event describes what happens when the gamemaster releases the buzzer
+    GAMEMASTER_LOCK_BUZZER,
     
     /// This event describes what happens when the gamemaster locks the inputs
     GAMEMASTER_LOCK_INPUTS,

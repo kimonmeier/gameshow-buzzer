@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PlayerInfo } from "$lib/models/Player";
 	import App from "$lib/services/GameManager";
-	import { buzzers } from "$lib/store/BuzzerStore";
+	import { buzzers, isBuzzerLocked } from "$lib/store/BuzzerStore";
 	import { inputs, isInputFocused } from "$lib/store/InputStore";
 	import { players } from "$lib/store/PlayerStore";
 	import Icon from "@iconify/svelte";
@@ -31,7 +31,11 @@
         });
     }
 
-    function buzzer() {        
+    function buzzer() {
+        if($isBuzzerLocked) {
+            return;
+        }
+        
         App.getInstance().sendMessage({
             type: ClientEvents.PLAYER_BUZZER_PRESSED
         });
@@ -39,11 +43,11 @@
 
     $: buzzerInfo = $buzzers.find(x => x.playerId == player.id)!;
     $: inputInfo = $inputs.find(x => x.playerId == player.id)!;
-    $: isBuzzerLocked = $buzzers.filter(x => x.buzzerTime != null).length != 0;
+    $: isBuzzerPersonallyLocked = $buzzers.filter(x => x.buzzerTime != null).length != 0;
     $: myBuzzerWasFirst = $buzzers.filter(x => x.buzzerTime != null).sort(x => x.buzzerTime!).at(0)?.playerId == player.id;
 
     $: buzzerBackgroundColor = (): string => {
-        if (isBuzzerLocked && buzzerInfo.buzzerTime == null) {
+        if ((isBuzzerPersonallyLocked || $isBuzzerLocked) && buzzerInfo.buzzerTime == null) {
             return "bg-gray-600";
         }
 
