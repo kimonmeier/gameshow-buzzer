@@ -29,8 +29,8 @@ export default class App {
     }
 
     public startApp(): void {
-        //this.client = new WebSocketClient("wss://gameshow.k-meier.ch");
-        this.client = new WebSocketClient("ws://localhost:2222");
+        this.client = new WebSocketClient("wss://gameshow.k-meier.ch/buzzer/socket");
+        //this.client = new WebSocketClient("ws://localhost:2222");
         this.awaitConnection(20).then((result) => {
             if (!result) {
                 alertStore.showError("Couldn't connect to the server!", true)
