@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import '../app.css';
+	import '../../app.css';
 	import App from '$lib/services/GameManager';
 	import { alertStore } from '$lib/store/AlertStore';
 	import Alert from '$lib/components/alert/Alert.svelte';
