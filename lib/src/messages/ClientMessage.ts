@@ -33,7 +33,15 @@ interface GameMasterDecreasePointsMessage {
     type: ClientEvents.GAMEMASTER_DECREASE_POINTS_BY_PLAYER,
     playerId: string,
     points: number;
-} 
+}
+
+interface GameMasterAnswerRightMessage {
+    type: ClientEvents.GAMEMASTER_ANSWER_RIGHT,
+}
+
+interface GameMasterAnswerWrongMessage {
+    type: ClientEvents.GAMEMASTER_ANSWER_WRONG,
+}
 
 interface PlayerInputChangedMessage {
     type: ClientEvents.PLAYER_INPUT_CHANGED,
@@ -50,9 +58,10 @@ interface ServerPingMessage {
     date: number
 }
 
-type GameMasterPouintsMessageType = GameMasterIncreasePointsMessage | GameMasterDecreasePointsMessage;
+type GameMasterAnswerMessageType = GameMasterAnswerRightMessage | GameMasterAnswerWrongMessage;
+type GameMasterPointsMessageType = GameMasterIncreasePointsMessage | GameMasterDecreasePointsMessage;
 type GameMasterInputMessageType = GameMasterReleaseInputsMessage | GameMasterLockInputsMessage;
-type GameMasterMessageType = GameMasterReleaseBuzzerMessage | GameMasterInputMessageType | GameMasterPouintsMessageType;
+type GameMasterMessageType = GameMasterReleaseBuzzerMessage | GameMasterInputMessageType | GameMasterPointsMessageType | GameMasterAnswerMessageType;
 
 type PlayerMessageType = PlayerConnectingMessage | PlayerLeavingMessage | PlayerInputChangedMessage | PlayerBuzzerPressedMessage;
 

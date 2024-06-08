@@ -4,12 +4,16 @@
 	import App from '$lib/services/GameManager';
 	import { alertStore } from '$lib/store/AlertStore';
 	import Alert from '$lib/components/alert/Alert.svelte';
-	import { buzzerSound } from '$lib/store/AudioStore';
+	import { answerRightSound, answerWrongSound, buzzerSound } from '$lib/store/AudioStore';
 	import { Sound } from 'svelte-sound';
 	import buzzerSoundFile from "$lib/assets/buzzer.mp3";
+	import answerRightSoundFile from "$lib/assets/right_answer.wav";
+	import answerWrongSoundFile from "$lib/assets/wrong_answer.wav";
 	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
 
 	$buzzerSound = new Sound(buzzerSoundFile, {volume: 0.4});
+	$answerRightSound = new Sound(answerRightSoundFile, {volume: 0.6});
+	$answerWrongSound = new Sound(answerWrongSoundFile, {volume: 0.5});
 
 	onMount(() => {
 		App.getInstance().startApp();

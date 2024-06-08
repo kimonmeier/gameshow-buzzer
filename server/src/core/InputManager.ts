@@ -60,7 +60,15 @@ export default class InputManager {
                     type: ServerEvents.BUZZER_RELEASED,
                 })
                 break;
-
+            case ClientEvents.GAMEMASTER_ANSWER_RIGHT:
+                this.connection.broadcast({
+                    type: ServerEvents.ANSWER_RIGHT
+                });
+                break;
+            case ClientEvents.GAMEMASTER_ANSWER_WRONG:
+                this.connection.broadcast({
+                    type: ServerEvents.ANSWER_WRONG
+                });
         }
 
     }

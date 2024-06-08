@@ -21,6 +21,13 @@ export enum ServerEvents {
     /// Buzzer wurde released
     BUZZER_RELEASED,
 
+    
+
+    /// right answer
+    ANSWER_RIGHT,
+    /// wrong answer
+    ANSWER_WRONG,
+
     /// Inputs locked
     INPUTS_LOCKED,
     /// Inputs released

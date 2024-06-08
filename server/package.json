@@ -14,11 +14,11 @@
     "@types/node": "^20.2.5",
     "@types/uuid": "^9.0.1",
     "@types/ws": "^8.5.4",
+    "esbuild": "^0.21.4",
     "nodemon": "^2.0.22",
     "pkg": "^5.8.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
-    "esbuild": "^0.21.4"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
     "gameshow-lib": "file:../lib/dist/gameshow-lib-0.0.1.tgz",

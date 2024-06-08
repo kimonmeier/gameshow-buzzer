@@ -64,8 +64,18 @@ interface InputsReleasedMessage {
     type: ServerEvents.INPUTS_RELEASED;
 }
 
+interface AnswerRightMessage {
+    type: ServerEvents.ANSWER_RIGHT;
+}
+
+interface AnswerWrongMessage {
+    type: ServerEvents.ANSWER_WRONG;
+}
+
 type PlayerInputEventType = PlayerInputChangedMessage | PlayerInputLockedMessage | PlayerInputReleasedMessage;
 type PlayerEventType = PlayerSetId | PlayerJoinedMessage | PlayerLeftMessage | PlayerPointsChangedMessage | PlayerInputEventType;
+
+type AnswerEventType = AnswerRightMessage | AnswerWrongMessage;
 
 type InputEventType = InputsLockedMessage | InputsReleasedMessage;
 
@@ -73,4 +83,4 @@ type BuzzerEventType = PlayerBuzzerPressedMessage | BuzzerReleasedMessage;
 
 type ServerEventType = ServerClosedMessage | ServerPingMessage;
 
-export type ServerMessage = PlayerEventType | ServerEventType | BuzzerEventType | InputEventType;
+export type ServerMessage = PlayerEventType | ServerEventType | BuzzerEventType | InputEventType | AnswerEventType;

@@ -21,6 +21,12 @@ export enum ClientEvents {
     /// This event describes what happens when the gamemaster decreases the points of a player
     GAMEMASTER_DECREASE_POINTS_BY_PLAYER,
 
+    /// This event describes what happens when the gamemaster selects a right answer
+    GAMEMASTER_ANSWER_RIGHT,
+
+    /// This event describes what happens when the gamemaster selects a wrong answer
+    GAMEMASTER_ANSWER_WRONG,
+
     /// This event describes what happens when a player changes their inputs
     PLAYER_INPUT_CHANGED,
 

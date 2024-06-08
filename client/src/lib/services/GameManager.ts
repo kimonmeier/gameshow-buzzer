@@ -8,7 +8,8 @@ import { inputs } from "$lib/store/InputStore";
 import { buzzers } from "$lib/store/BuzzerStore";
 import { alertStore } from "$lib/store/AlertStore";
 import { currentUserId, isLoggedIn } from "$lib/store/LoginStore";
-import { buzzerSoundPlayed } from "$lib/store/AudioStore";
+import { answerRightSound, answerWrongSound, buzzerSoundPlayed } from "$lib/store/AudioStore";
+import { get } from "svelte/store";
 
 export default class App {
     private static instance: App;
@@ -109,6 +110,13 @@ export default class App {
                 buzzers.clearBuzzing();
                 buzzerSoundPlayed.set(false);
                 break;
+            case ServerEvents.ANSWER_RIGHT:
+                get(answerRightSound).play();
+                break;
+            case ServerEvents.ANSWER_WRONG:
+                get(answerWrongSound).play();
+                break;
+            
             case ServerEvents.SERVER_PING:
                 console.log("Player pinged");
                 break;
