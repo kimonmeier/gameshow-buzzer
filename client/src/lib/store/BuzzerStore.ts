@@ -18,18 +18,17 @@ function create(playerId: string): BuzzerInfo {
 }
 
 function createBuzzerStore(): BuzzerStore {
-    const { update, subscribe } = writable<BuzzerInfo[]>([]);
+    const { update, subscribe, set } = writable<BuzzerInfo[]>([]);
 
     return {
         ...createBasicPlayerStore(create, update),  
         subscribe,
         clearBuzzing: () => update(x => { x.forEach(element => element.buzzerTime = null); return x; }),
         playerBuzzed: (playerId: string, time: number) => { 
-            update(x => { 
-                x.find(z => z.playerId == playerId)!.buzzerTime = time;
+            let array = get({subscribe});
+            array.find(x => x.playerId == playerId)!.buzzerTime = time;
 
-                return x.sort(z => z.buzzerTime ?? Number.MAX_VALUE);
-             })
+            set([...array].sort(z => z.buzzerTime ?? Number.MAX_VALUE))
 
             if (get(buzzerSoundPlayed)) {
                 return;
