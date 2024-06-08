@@ -16,7 +16,7 @@
     <div class="{isFirstBuzzer ? "bg-green-600" : buzzerInfo.buzzerTime != null  ? "bg-yellow-500" : "bg-slate-700"} rounded-full w-10 h-10">
     </div>
 
-    <div class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10">
+    <div class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10 overflow-hidden">
         {inputInfo?.input}
     </div>
     
