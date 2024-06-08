@@ -4,7 +4,11 @@ import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 import type { ServerMessage } from "gameshow-lib/messages/ServerMessage";
 import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
 import { players } from "$lib/store/PlayerStore";
+import { inputs } from "$lib/store/InputStore";
+import { buzzers } from "$lib/store/BuzzerStore";
 import { alertStore } from "$lib/store/AlertStore";
+import type { PlayerInfo } from "$lib/models/Player";
+import { currentUserId, isLoggedIn } from "$lib/store/LoginStore";
 
 export default class App {
     private static instance: App;
@@ -61,43 +65,48 @@ export default class App {
         console.log(m);
 
         switch (m.type) {
+            case ServerEvents.PLAYER_SET_ID:
+                currentUserId.set(m.id);
+                isLoggedIn.set(true);
+                break;
             case ServerEvents.PLAYER_JOINED:
-                players.update(x => [...x, { id: m.id, name: m.name, input: '', isBuzzerPressed: false, isInputLocked: false, points: 0 }]);
+                players.addPlayer(m.id, m.name);
+                inputs.addPlayer(m.id);
+                buzzers.addPlayer(m.id);
                 break;
             
             case ServerEvents.PLAYER_LEFT:
-                players.update(x => x.filter(x => x.id != m.id ));
+                players.removePlayer(m.id);
+                inputs.removePlayer(m.id);
+                buzzers.removePlayer(m.id);
                 break;
 
             case ServerEvents.PLAYER_POINTS_CHANGED:
-                players.update(x => {
-                    let player = x.find(z => z.id == m.playerId);
-                    if (!player) {
-                        throw Error("Points changed for an unkown player");
-                    }
-
-                    player.points = m.points;
-                    return x;
-                })
+                players.setPoints(m.playerId, m.points);
                 break;
-            case ServerEvents.BUZZER_PRESSED_BY_PLAYER:
-                players.update(x => {
-                    let player = x.find(z => z.id == m.playerId);
-                    if (!player) {
-                        throw Error("Points changed for an unkown player");
-                    }
 
-                    player.isBuzzerPressed = true;
-                    return x;
-                })
+            case ServerEvents.PLAYER_INPUT_CHANGED:
+                inputs.inputChanged(m.id, m.input);
+                break;
+            case ServerEvents.PLAYER_INPUT_LOCKED:
+                inputs.lockedForPlayer(m.id);
+                break;
+            case ServerEvents.PLAYER_INPUT_RELEASED:
+                inputs.releasedForPlayer(m.id);
+                break;
+
+            case ServerEvents.INPUTS_LOCKED:
+                inputs.locked();
+                break;
+            case ServerEvents.INPUTS_RELEASED:
+                inputs.released();
+                break;
+
+            case ServerEvents.BUZZER_PRESSED_BY_PLAYER:
+                buzzers.playerBuzzed(m.playerId, m.time);
                 break;
             case ServerEvents.BUZZER_RELEASED:
-                players.update(x => {
-                    x.forEach(player => {
-                        player.isBuzzerPressed = false;
-                    });
-                    return x;
-                })
+                buzzers.clearBuzzing();
                 break;
             case ServerEvents.SERVER_PING:
                 console.log("Player pinged");

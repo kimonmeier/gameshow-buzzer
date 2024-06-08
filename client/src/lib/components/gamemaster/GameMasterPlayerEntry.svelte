@@ -1,27 +1,41 @@
 <script lang="ts">
-	import type { PlayerInfo } from "$lib/models/Player";
+	import type { PlayerInfo, BuzzerInfo, InputInfo } from "$lib/models/Player";
+	import App from "$lib/services/GameManager";
+	import { buzzers } from "$lib/store/BuzzerStore";
+	import { inputs } from "$lib/store/InputStore";
+	import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 
     export let player: PlayerInfo;
+
+    function releaseInput() {
+        App.getInstance().sendMessage({
+            type: ClientEvents.GAMEMASTER_RELEASE_INPUTS,
+            playerId: player.id
+        });
+    }
+
+    $: buzzerInfo = $buzzers.find(x => x.playerId == player.id) as BuzzerInfo;
+    $: inputInfo = $inputs.find(x => x.playerId == player.id) as InputInfo;
 </script>
 
 <div class="flex flex-row my-1">
-    <div class="{player.isBuzzerPressed ? "bg-green-600" : "bg-slate-700"} rounded-full w-10 h-10">
+    <div class="{buzzerInfo.buzzerTime != null  ? "bg-green-600" : "bg-slate-700"} rounded-full w-10 h-10">
     </div>
 
     <div class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center">
-        {player.input}
+        {inputInfo.input}
     </div>
 
-    <div class="p-2 rounded-xl ml-2 {player.isInputLocked ? "w-36" : "w-80" } text-center { player.isInputLocked ? "bg-green-600" : "bg-indigo-600" }">
-        {#if player.isInputLocked}
+    <div class="p-2 rounded-xl ml-2 {inputInfo.isLocked ? "w-36" : "w-80" } text-center { inputInfo.isLocked ? "bg-green-600" : "bg-indigo-600" }">
+        {#if inputInfo.isLocked}
             <div>Eingeloggt!</div>
         {:else}
             <div>Schreibt noch...</div>
         {/if}
     </div>
 
-    {#if player.isInputLocked}
-        <button class="bg-violet-600 p-2 ml-4 rounded-xl w-40">
+    {#if inputInfo.isLocked}
+        <button class="bg-violet-600 p-2 ml-4 rounded-xl w-40" on:click={releaseInput}>
             <div>Eingabe freigeben</div>
         </button>
     {/if}

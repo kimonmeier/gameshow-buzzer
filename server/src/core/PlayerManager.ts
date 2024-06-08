@@ -26,16 +26,6 @@ export default class PlayerManager {
         return this.gameProgress.get(uuid)!;
     }
 
-    public setGamePoints(uuid: string, points: number): void {
-        this.gameProgress.set(uuid, points);
-
-        this.connection.broadcast({
-            type: ServerEvents.PLAYER_POINTS_CHANGED,
-            playerId: uuid,
-            points
-        });
-    }
-
     public handleInputs(client: WebSocketClient, m: ClientMessage): void {
         switch(m.type) {
             case ClientEvents.PLAYER_CONNECTING:
@@ -49,6 +39,11 @@ export default class PlayerManager {
                     id: client.uuid,
                     name: m.name,
                 });
+
+                client.send({
+                    type: ServerEvents.PLAYER_SET_ID,
+                    id: client.uuid
+                })
                 break;
             case ClientEvents.PLAYER_LEAVING:
                 this.gameProgress.delete(client.uuid);
@@ -59,6 +54,26 @@ export default class PlayerManager {
                     type: ServerEvents.PLAYER_LEFT,
                     id: client.uuid
                 });
+                break;
+            case ClientEvents.GAMEMASTER_DECREASE_POINTS_BY_PLAYER:
+                let decreasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) - m.points;
+                this.gameProgress.set(m.playerId, decreasedPlayerPoints);
+
+                this.connection.broadcast({
+                    type: ServerEvents.PLAYER_POINTS_CHANGED,
+                    playerId: m.playerId,
+                    points: decreasedPlayerPoints
+                })
+                break;
+            case ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER:
+                let increasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) + m.points;
+                this.gameProgress.set(m.playerId, increasedPlayerPoints);
+
+                this.connection.broadcast({
+                    type: ServerEvents.PLAYER_POINTS_CHANGED,
+                    playerId: m.playerId,
+                    points: increasedPlayerPoints
+                })
                 break;
         }
     }

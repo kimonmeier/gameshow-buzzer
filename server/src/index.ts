@@ -1,3 +1,6 @@
 import App from "./core/App";
 
-new App().startApp();
+let app = new App();
+app.startApp();
+
+app.stopApp();

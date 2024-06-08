@@ -4,6 +4,7 @@ export enum ServerEvents {
     PLAYER_JOINED,
     /// Player left
     PLAYER_LEFT,
+    PLAYER_SET_ID,
 
     /// Points of player changed
     PLAYER_POINTS_CHANGED,

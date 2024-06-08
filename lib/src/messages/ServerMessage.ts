@@ -11,6 +11,11 @@ interface PlayerLeftMessage {
     id: string;
 }
 
+interface PlayerSetId {
+    type: ServerEvents.PLAYER_SET_ID,
+    id: string;
+}
+
 interface PlayerInputChangedMessage {
     type: ServerEvents.PLAYER_INPUT_CHANGED,
     id: string,
@@ -43,7 +48,8 @@ interface PlayerPointsChangedMessage {
 
 interface PlayerBuzzerPressedMessage {
     type: ServerEvents.BUZZER_PRESSED_BY_PLAYER,
-    playerId: string
+    playerId: string,
+    time: number
 }
 
 interface BuzzerReleasedMessage {
@@ -59,7 +65,7 @@ interface InputsReleasedMessage {
 }
 
 type PlayerInputEventType = PlayerInputChangedMessage | PlayerInputLockedMessage | PlayerInputReleasedMessage;
-type PlayerEventType = PlayerJoinedMessage | PlayerLeftMessage | PlayerPointsChangedMessage | PlayerInputEventType;
+type PlayerEventType = PlayerSetId | PlayerJoinedMessage | PlayerLeftMessage | PlayerPointsChangedMessage | PlayerInputEventType;
 
 type InputEventType = InputsLockedMessage | InputsReleasedMessage;
 
