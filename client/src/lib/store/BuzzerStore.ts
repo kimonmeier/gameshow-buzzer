@@ -25,7 +25,19 @@ function createBuzzerStore(): BuzzerStore {
         subscribe,
         clearBuzzing: () => update(x => { x.forEach(element => element.buzzerTime = null); return x; }),
         playerBuzzed: (playerId: string, time: number) => { 
-            update(x => { x.find(z => z.playerId == playerId)!.buzzerTime = time; return x; })
+            update(x => { 
+                let buzzerInfo = x.find(z => z.playerId == playerId);
+
+                if (buzzerInfo?.buzzerTime == null) {
+                    buzzerInfo!.buzzerTime = time;
+                }
+
+                return x;
+             })
+
+            if (get(buzzerSoundPlayed)) {
+                return;
+            }
             buzzerSoundPlayed.set(true)
             get(buzzerSound).play();
         },
