@@ -6,6 +6,7 @@ import { ClientMessage } from "gameshow-lib/messages/ClientMessage";
 
 export default class InputManager {
     private readonly connection: WebSocketConnection;
+    private readonly buzzerPressed: Map<string, number> = new Map();
 
     public constructor (connection: WebSocketConnection) {
         this.connection = connection;
@@ -49,13 +50,22 @@ export default class InputManager {
                 }
                 break;
             case ClientEvents.PLAYER_BUZZER_PRESSED:
+                if (this.buzzerPressed.has(client.uuid)) {
+                    return;
+                }
+
+                let dateNow = Date.now();
+                this.buzzerPressed.set(client.uuid, dateNow);
+
                 this.connection.broadcast({
                     type: ServerEvents.BUZZER_PRESSED_BY_PLAYER,
                     playerId: client.uuid,
-                    time: Date.now()
+                    time: dateNow
                 })
                 break;
             case ClientEvents.GAMEMASTER_RELEASE_BUZZER:
+                this.buzzerPressed.clear();
+
                 this.connection.broadcast({
                     type: ServerEvents.BUZZER_RELEASED,
                 })

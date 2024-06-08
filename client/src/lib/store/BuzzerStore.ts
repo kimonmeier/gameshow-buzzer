@@ -26,11 +26,7 @@ function createBuzzerStore(): BuzzerStore {
         clearBuzzing: () => update(x => { x.forEach(element => element.buzzerTime = null); return x; }),
         playerBuzzed: (playerId: string, time: number) => { 
             update(x => { 
-                let buzzerInfo = x.find(z => z.playerId == playerId);
-
-                if (buzzerInfo?.buzzerTime == null) {
-                    buzzerInfo!.buzzerTime = time;
-                }
+                x.find(z => z.playerId == playerId)!.buzzerTime = time;
 
                 return x.sort(z => z.buzzerTime ?? Number.MAX_VALUE);
              })

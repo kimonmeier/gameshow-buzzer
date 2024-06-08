@@ -19,10 +19,8 @@
             Keine Spieler gefunden!
         </h3>
     {:else}
-        {#each buzzerEntries as entry, key}
-            {#key key}
-                <GameMasterBuzzerEntry player={entry} />
-            {/key}
+        {#each buzzerEntries as entry (entry.playerName)}
+            <GameMasterBuzzerEntry player={entry} />
         {/each}
     {/if}
 </div>
