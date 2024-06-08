@@ -7,7 +7,6 @@ import { players } from "$lib/store/PlayerStore";
 import { inputs } from "$lib/store/InputStore";
 import { buzzers } from "$lib/store/BuzzerStore";
 import { alertStore } from "$lib/store/AlertStore";
-import type { PlayerInfo } from "$lib/models/Player";
 import { currentUserId, isLoggedIn } from "$lib/store/LoginStore";
 import { buzzerSoundPlayed } from "$lib/store/AudioStore";
 
