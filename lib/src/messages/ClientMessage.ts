@@ -58,6 +58,10 @@ interface ServerPingMessage {
     date: number
 }
 
+interface RequestGamemasterMessage {
+    type: ClientEvents.REQUEST_GAMEMASTER,
+}
+
 type GameMasterAnswerMessageType = GameMasterAnswerRightMessage | GameMasterAnswerWrongMessage;
 type GameMasterPointsMessageType = GameMasterIncreasePointsMessage | GameMasterDecreasePointsMessage;
 type GameMasterInputMessageType = GameMasterReleaseInputsMessage | GameMasterLockInputsMessage;
@@ -65,6 +69,6 @@ type GameMasterMessageType = GameMasterReleaseBuzzerMessage | GameMasterInputMes
 
 type PlayerMessageType = PlayerConnectingMessage | PlayerLeavingMessage | PlayerInputChangedMessage | PlayerBuzzerPressedMessage;
 
-type ServerMessageType = ServerPingMessage;
+type ServerMessageType = ServerPingMessage | RequestGamemasterMessage;
 
 export type ClientMessage = ServerMessageType | PlayerMessageType | GameMasterMessageType;

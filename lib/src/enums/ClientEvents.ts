@@ -27,6 +27,9 @@ export enum ClientEvents {
     /// This event describes what happens when the gamemaster selects a wrong answer
     GAMEMASTER_ANSWER_WRONG,
 
+    /// This event describes when a gamemaster wants to login
+    REQUEST_GAMEMASTER,
+
     /// This event describes what happens when a player changes their inputs
     PLAYER_INPUT_CHANGED,
 

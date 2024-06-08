@@ -9,6 +9,7 @@ export default class PlayerManager {
 
     private players: Map<WebSocketClient, Player> = new Map();
     private gameProgress: Map<string, number> = new Map();
+    private gameMasterId: string = "";
 
 
     public constructor (connection: WebSocketConnection) {
@@ -45,9 +46,16 @@ export default class PlayerManager {
                     id: client.uuid
                 })
                 break;
+            case ClientEvents.REQUEST_GAMEMASTER:
+                if (this.gameMasterId != "") {
+                    console.log("Connection closed because there is already a gamemaster logged in")
+                    client.close("Already a gamemaster in the game");
+                    return;
+                }
+
+                this.gameMasterId = client.uuid;
             case ClientEvents.PLAYER_LEAVING:
                 this.gameProgress.delete(client.uuid);
-    
                 this.players.delete(client);
     
                 this.connection.broadcast({

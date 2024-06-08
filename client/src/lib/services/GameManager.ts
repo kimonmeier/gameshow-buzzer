@@ -51,7 +51,12 @@ export default class App {
         return this.client.isOpen;
     }
 
+    public get IsConnected() {
+        return this.client?.isOpen ?? false;
+    }
+
     public stopApp(): void {
+        console.log("Stop")
         this.client?.send({
             type: ClientEvents.PLAYER_LEAVING
         });

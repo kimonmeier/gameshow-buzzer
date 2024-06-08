@@ -74,7 +74,7 @@ export default class WebSocketClient {
 	}
 
 	public get isOpen(): boolean {
-		return this.socket!.readyState === WebSocket.OPEN;
+		return this.socket?.readyState === WebSocket.OPEN;
 	}
 
 	private get isTryingToConnect(): boolean {

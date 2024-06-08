@@ -15,6 +15,10 @@ export default class WebSocketClient implements Client {
 		this.socket.send(JSON.stringify(m));
 	}
 
+	public close(message: string): void {
+		this.socket.close();
+	}
+
 	public get isOpen(): boolean {
 		return this.socket.readyState === WebSocket.OPEN;
 	}
