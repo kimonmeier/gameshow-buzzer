@@ -33,8 +33,7 @@
 
     function buzzer() {        
         App.getInstance().sendMessage({
-            type: ClientEvents.PLAYER_BUZZER_PRESSED,
-            time: Date.now()
+            type: ClientEvents.PLAYER_BUZZER_PRESSED
         });
     }
 

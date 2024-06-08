@@ -50,7 +50,6 @@ interface PlayerInputChangedMessage {
 
 interface PlayerBuzzerPressedMessage {
     type: ClientEvents.PLAYER_BUZZER_PRESSED,
-    time: number
 }
 
 interface ServerPingMessage {
