@@ -2,7 +2,7 @@
 	import type { PlayerInfo } from "$lib/models/Player";
 	import App from "$lib/services/GameManager";
 	import { buzzers } from "$lib/store/BuzzerStore";
-	import { inputs } from "$lib/store/InputStore";
+	import { inputs, isInputFocused } from "$lib/store/InputStore";
 	import { players } from "$lib/store/PlayerStore";
 	import Icon from "@iconify/svelte";
 	import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
@@ -74,7 +74,7 @@
             {/if}
         </button>
         <div class="flex flex-col w-3/4 gap-2">
-            <input type="text" class="row-start-2 bg-slate-300 rounded-xl mt-10 px-2 py-1 text-black font-mono" disabled={inputInfo.isLocked} bind:value on:input={onInputChanged} placeholder="Eingabe..." />
+            <input type="text" class="row-start-2 bg-slate-300 rounded-xl mt-10 px-2 py-1 text-black font-mono" disabled={inputInfo.isLocked} on:focusin={() => $isInputFocused = true} on:focusout={() => $isInputFocused = false} bind:value on:input={onInputChanged} placeholder="Eingabe..." />
             {#if inputInfo.isLocked}
                 <div class="bg-green-700 row-start-4 rounded-xl py-1 text-center">Eingeloggt!</div>
             {:else}

@@ -10,6 +10,7 @@
 	import answerRightSoundFile from "$lib/assets/right_answer.wav";
 	import answerWrongSoundFile from "$lib/assets/wrong_answer.wav";
 	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
+	import { isInputFocused } from '$lib/store/InputStore';
 
 	$buzzerSound = new Sound(buzzerSoundFile, {volume: 0.4});
 	$answerRightSound = new Sound(answerRightSoundFile, {volume: 0.6});
@@ -25,6 +26,9 @@
 
 	function keyDown(e: KeyboardEvent) {
 		if (e.keyCode == 32) {
+			if ($isInputFocused) {
+				return;
+			}
 			App.getInstance().sendMessage({
 				type: ClientEvents.PLAYER_BUZZER_PRESSED,
 				time: Date.now(),

@@ -26,3 +26,4 @@ function createBuzzerStore(): InputStore {
 }
 
 export const inputs = createBuzzerStore();
+export const isInputFocused = writable<boolean>(false);
