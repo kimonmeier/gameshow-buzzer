@@ -31,12 +31,13 @@
         });
     }
 
+    $: isFirstBuzzer = $buzzers.filter(x => x.buzzerTime != null).sort(x => x.buzzerTime!).at(0)?.playerId == player.id;
     $: buzzerInfo = $buzzers.find(x => x.playerId == player.id) as BuzzerInfo;
     $: inputInfo = $inputs.find(x => x.playerId == player.id) as InputInfo;
 </script>
 
 <div class="flex flex-row my-1 items-center">
-    <div class="{buzzerInfo.buzzerTime != null  ? "bg-green-600" : "bg-slate-700"} rounded-full w-10 h-10">
+    <div class="{isFirstBuzzer ? "bg-green-600" : buzzerInfo.buzzerTime != null  ? "bg-yellow-500" : "bg-slate-700"} rounded-full w-10 h-10">
     </div>
 
     <div class="font-bold text-right w-20">
