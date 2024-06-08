@@ -3,6 +3,7 @@
 	import App from "$lib/services/GameManager";
 	import { buzzers } from "$lib/store/BuzzerStore";
 	import { inputs } from "$lib/store/InputStore";
+	import { players } from "$lib/store/PlayerStore";
 	import Icon from "@iconify/svelte";
 	import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 	import { tick } from "svelte";
@@ -63,24 +64,39 @@
     }
 </script>
 
-<div class="flex flex-row items-center justify-center">
-    <button class="rounded-full {buzzerBackgroundColor()} mr-4 w-20 h-20 justify-center flex items-center" on:click={buzzer}>
-        {#if isBuzzerLocked}
-            {#if myBuzzerWasFirst}
-                <Icon icon="mdi:lock-check-outline"/>
+<div class="flex flex-col">
+    <div class="flex flex-row items-center justify-center">
+        <button class="rounded-full {buzzerBackgroundColor()} mr-4 w-40 h-40 justify-center flex items-center" on:click={buzzer}>
+            {#if isBuzzerLocked}
+                {#if myBuzzerWasFirst}
+                    <Icon icon="mdi:lock-check-outline" class="h-1/2 w-1/2"/>
+                {:else}
+                    <Icon icon="mdi:lock-open-remove-outline" class="h-1/2 w-1/2"/>
+                {/if}
             {:else}
-                <Icon icon="mdi:lock-open-remove-outline"/>
+                <Icon icon="mdi:lock-open-outline" class="h-1/2 w-1/2"/>
             {/if}
-        {:else}
-            <Icon icon="mdi:lock-open-outline"/>
-        {/if}
-    </button>
-    <div class="flex flex-col w-3/4 gap-2">
-        <input type="text" class="row-start-2 bg-slate-300 rounded-xl mt-10 px-2 py-1 text-black font-mono" disabled={inputInfo.isLocked} bind:value on:input={onInputChanged} placeholder="Eingabe..." />
-        {#if inputInfo.isLocked}
-            <div class="bg-green-700 row-start-4 rounded-xl py-1 text-center">Eingeloggt!</div>
-        {:else}
-            <button class="bg-indigo-600 row-start-4 rounded-xl py-1" on:click={lockInput}>Bestätigen</button>
-        {/if}
+        </button>
+        <div class="flex flex-col w-3/4 gap-2">
+            <input type="text" class="row-start-2 bg-slate-300 rounded-xl mt-10 px-2 py-1 text-black font-mono" disabled={inputInfo.isLocked} bind:value on:input={onInputChanged} placeholder="Eingabe..." />
+            {#if inputInfo.isLocked}
+                <div class="bg-green-700 row-start-4 rounded-xl py-1 text-center">Eingeloggt!</div>
+            {:else}
+                <button class="bg-indigo-600 row-start-4 rounded-xl py-1" on:click={lockInput}>Bestätigen</button>
+            {/if}
+        </div>
+    </div>
+    <h1 class="text-center mt-5">Leaderboard</h1>
+    <div class="flex flex-col w-1/2 m-auto">
+        <div class="flex flex-row border-b font-bold">
+            <div class="w-1/2 text-right p-2">Name</div>
+            <div class="w-1/2 p-2">Punkte</div>
+        </div>
+        {#each $players as currentPlayer}
+            <div class="flex flex-row">
+                <div class="w-1/2 text-right p-2">{currentPlayer.name}</div>
+                <div class="w-1/2 p-2">{currentPlayer.points}</div>
+            </div>
+        {/each}
     </div>
 </div>
