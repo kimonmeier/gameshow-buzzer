@@ -5,12 +5,12 @@
 	import GameMasterBuzzerEntry from "./GameMasterBuzzerEntry.svelte";
 
 
-    $: onlyBuzzedEntries = $buzzers.filter(x => x.buzzerTime != null).sort(x => x.buzzerTime!)
+    $: onlyBuzzedEntries = $buzzers.filter(x => x.buzzerTime != null)
     $: buzzerEntries = onlyBuzzedEntries.map<PlayerBuzzerModel>((x, i) => ({
         playerName: $players.find(z => z.id == x.playerId)!.name,
         timeBuzzedInMs: x.buzzerTime!,
         differenceInMs: i == 0 ? 0 : (x.buzzerTime! - onlyBuzzedEntries[i-1].buzzerTime!)
-    }));
+    })).sort(x => x.timeBuzzedInMs);
 </script>
 
 <div class="flex flex-col">
@@ -19,8 +19,10 @@
             Keine Spieler gefunden!
         </h3>
     {:else}
-        {#each buzzerEntries as entry}
-            <GameMasterBuzzerEntry player={entry} />
+        {#each buzzerEntries as entry, key}
+            {#key key}
+                <GameMasterBuzzerEntry player={entry} />
+            {/key}
         {/each}
     {/if}
 </div>

@@ -32,7 +32,7 @@ function createBuzzerStore(): BuzzerStore {
                     buzzerInfo!.buzzerTime = time;
                 }
 
-                return x;
+                return x.sort(z => z.buzzerTime ?? Number.MAX_VALUE);
              })
 
             if (get(buzzerSoundPlayed)) {
