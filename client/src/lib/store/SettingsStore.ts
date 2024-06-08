@@ -1,3 +1,4 @@
 import { writable } from "svelte/store";
 
-export const pointsInkrement = writable<number>(1);
+export const pointsInkrementRightAnswer = writable<number>(1);
+export const pointsInkrementWrongAnswer = writable<number>(1);

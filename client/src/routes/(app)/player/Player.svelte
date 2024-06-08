@@ -51,7 +51,7 @@
             return "bg-gray-600";
         }
 
-        if (buzzerInfo.buzzerTime == null && !isBuzzerLocked) {
+        if (buzzerInfo.buzzerTime == null && !(isBuzzerPersonallyLocked || $isBuzzerLocked)) {
             return "bg-green-700";
         }
 

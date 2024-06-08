@@ -3,7 +3,7 @@
 	import App from "$lib/services/GameManager";
 	import { buzzers } from "$lib/store/BuzzerStore";
 	import { inputs } from "$lib/store/InputStore";
-	import { pointsInkrement } from "$lib/store/SettingsStore";
+	import { pointsInkrementRightAnswer } from "$lib/store/SettingsStore";
 	import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 
     export let player: PlayerInfo;
@@ -19,7 +19,7 @@
         App.getInstance().sendMessage({
             type: ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER,
             playerId: player.id,
-            points: $pointsInkrement
+            points: $pointsInkrementRightAnswer
         });
     }
     
@@ -27,7 +27,7 @@
         App.getInstance().sendMessage({
             type: ClientEvents.GAMEMASTER_DECREASE_POINTS_BY_PLAYER,
             playerId: player.id,
-            points: $pointsInkrement
+            points: $pointsInkrementRightAnswer
         });
     }
 

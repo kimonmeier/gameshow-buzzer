@@ -2,7 +2,8 @@
     import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 	import App from "$lib/services/GameManager";
 	import { buzzers, isBuzzerLocked } from "$lib/store/BuzzerStore";
-	import { pointsInkrement } from "$lib/store/SettingsStore";
+	import { pointsInkrementRightAnswer, pointsInkrementWrongAnswer } from "$lib/store/SettingsStore";
+	import { players } from "$lib/store/PlayerStore";
 
 
     function releaseBuzzer() {
@@ -43,7 +44,7 @@
         App.getInstance().sendMessage({
             type: ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER,
             playerId: buzzerInfo?.playerId,
-            points: $pointsInkrement
+            points: $pointsInkrementRightAnswer
         });
 
         App.getInstance().sendMessage({
@@ -62,10 +63,12 @@
             return;
         }
 
-        App.getInstance().sendMessage({
-            type: ClientEvents.GAMEMASTER_DECREASE_POINTS_BY_PLAYER,
-            playerId: buzzerInfo?.playerId,
-            points: $pointsInkrement
+        $players.filter(x => x.id != buzzerInfo.playerId).forEach(player => {
+            App.getInstance().sendMessage({
+                type: ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER,
+                playerId: player.id,
+                points: $pointsInkrementWrongAnswer
+            });
         });
 
         App.getInstance().sendMessage({
