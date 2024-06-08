@@ -1,18 +1,11 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import type { BuzzerInfo, InputInfo, PlayerInfo } from "$lib/models/Player";
 	import { buzzers } from "$lib/store/BuzzerStore";
 	import { inputs } from "$lib/store/InputStore";
 	import { players } from "$lib/store/PlayerStore";
-	import { onMount } from "svelte";
 
-    export let data;
-
-    onMount(() => {
-        console.log(data);
-        player = $players.find(x => x.id == data?.id)!
-    })
-
-    $: player = $players.find(x => x.id == data?.id)!;
+    $: player = $players.find(x => x.id == $page.url.searchParams.get("id"))!;
 
     $: isFirstBuzzer = $buzzers.filter(x => x.buzzerTime != null).sort(x => x.buzzerTime!).at(0)?.playerId == player?.id;
     $: buzzerInfo = $buzzers.find(x => x.playerId == player?.id) as BuzzerInfo;
