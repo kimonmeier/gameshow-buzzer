@@ -124,10 +124,6 @@ export default class App {
             case ServerEvents.SERVER_PING:
                 console.log("Player pinged");
                 break;
-
-            case ServerEvents.SERVER_CLOSED:
-                location.reload();
-                break;
             default:
                 throw new Error("Need to implement this shit!");
         }
