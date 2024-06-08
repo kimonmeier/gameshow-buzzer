@@ -37,6 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"gameshow-lib": "file:../lib/dist/gameshow-lib-0.0.1.tgz"
+		"gameshow-lib": "file:../lib/dist/gameshow-lib-0.0.1.tgz",
+		"svelte-sound": "^0.6.0"
 	}
 }

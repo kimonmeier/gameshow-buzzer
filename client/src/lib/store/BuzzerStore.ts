@@ -1,6 +1,7 @@
 import type { BuzzerInfo } from "$lib/models/Player";
-import { writable, type Readable } from "svelte/store";
+import { writable, type Readable, get } from "svelte/store";
 import { createBasicPlayerStore, type BasePlayerStore } from "./PlayerStore";
+import { buzzerSound, buzzerSoundPlayed } from "./AudioStore";
 
 
 interface BuzzerStore extends Readable<BuzzerInfo[]>, BasePlayerStore<BuzzerInfo> {
@@ -23,7 +24,11 @@ function createBuzzerStore(): BuzzerStore {
         ...createBasicPlayerStore(create, update),  
         subscribe,
         clearBuzzing: () => update(x => { x.forEach(element => element.buzzerTime = null); return x; }),
-        playerBuzzed: (playerId: string, time: number) => update(x => { x.find(z => z.playerId == playerId)!.buzzerTime = time; return x; }),
+        playerBuzzed: (playerId: string, time: number) => { 
+            update(x => { x.find(z => z.playerId == playerId)!.buzzerTime = time; return x; })
+            buzzerSoundPlayed.set(true)
+            get(buzzerSound).play();
+        },
     }
 }
 

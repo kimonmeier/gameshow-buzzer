@@ -9,6 +9,7 @@ import { buzzers } from "$lib/store/BuzzerStore";
 import { alertStore } from "$lib/store/AlertStore";
 import type { PlayerInfo } from "$lib/models/Player";
 import { currentUserId, isLoggedIn } from "$lib/store/LoginStore";
+import { buzzerSoundPlayed } from "$lib/store/AudioStore";
 
 export default class App {
     private static instance: App;
@@ -107,6 +108,7 @@ export default class App {
                 break;
             case ServerEvents.BUZZER_RELEASED:
                 buzzers.clearBuzzing();
+                buzzerSoundPlayed.set(false);
                 break;
             case ServerEvents.SERVER_PING:
                 console.log("Player pinged");

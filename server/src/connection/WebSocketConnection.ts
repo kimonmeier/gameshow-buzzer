@@ -6,12 +6,13 @@ import { ServerMessage } from "gameshow-lib/messages/ServerMessage";
 import Connection from "gameshow-lib/Connection"
 import Client from "gameshow-lib/Client";
 import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
+import { Server } from "ws";
 
 
 export default class WebSocketConnection
 	extends EventEmitter
 	implements Connection {
-	private socket!: WebSocket.Server;
+	private socket!: Server;
 	private _clients: WebSocketClient[] = [];
 
 	public constructor () {
@@ -19,7 +20,7 @@ export default class WebSocketConnection
 	}
 
 	public connect(): void {
-		this.socket = new WebSocket.Server({
+		this.socket = new WebSocket.WebSocketServer({
 			port: 2222
 		});
 

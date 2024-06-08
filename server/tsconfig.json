@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
     "module": "ESNext",
     "sourceMap": true,
-    "outDir": "./dist/",
     "strict": true,
     "noImplicitAny": true,
     "strictFunctionTypes": true,
@@ -16,8 +14,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
     "types": [
       "node"
     ]

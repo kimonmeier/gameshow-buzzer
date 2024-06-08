@@ -4,6 +4,11 @@
 	import App from '$lib/services/GameManager';
 	import { alertStore } from '$lib/store/AlertStore';
 	import Alert from '$lib/components/alert/Alert.svelte';
+	import { buzzerSound } from '$lib/store/AudioStore';
+	import { Sound } from 'svelte-sound';
+	import buzzerSoundFile from "$lib/assets/buzzer.mp3";
+
+	$buzzerSound = new Sound(buzzerSoundFile);
 
 	onMount(() => {
 		App.getInstance().startApp();
