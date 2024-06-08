@@ -62,6 +62,12 @@ export default class App {
     }
 
     public sendMessage(m: ClientMessage): void {
+        if (!this.IsConnected) {
+            this.recieve({
+                type: ServerEvents.SERVER_CLOSED
+            });
+        }
+
         this.client.send(m);
     }
 
