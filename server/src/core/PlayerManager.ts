@@ -37,26 +37,29 @@ export default class PlayerManager {
     }
 
     public handleInputs(client: WebSocketClient, m: ClientMessage): void {
-        if (m.type == ClientEvents.PLAYER_CONNECTING) {
-            this.players.set(client, {
-                client,
-                name: m.name,
-            });
+        switch(m.type) {
+            case ClientEvents.PLAYER_CONNECTING:
+                this.players.set(client, {
+                    client,
+                    name: m.name,
+                });
 
-            this.connection.broadcast({
-                type: ServerEvents.PLAYER_JOINED,
-                id: client.uuid,
-                name: m.name,
-            });
-        } else if (m.type == ClientEvents.PLAYER_LEAVING) {
-            this.gameProgress.delete(client.uuid);
-
-            this.players.delete(client);
-
-            this.connection.broadcast({
-                type: ServerEvents.PLAYER_LEFT,
-                id: client.uuid
-            });
+                this.connection.broadcast({
+                    type: ServerEvents.PLAYER_JOINED,
+                    id: client.uuid,
+                    name: m.name,
+                });
+                break;
+            case ClientEvents.PLAYER_LEAVING:
+                this.gameProgress.delete(client.uuid);
+    
+                this.players.delete(client);
+    
+                this.connection.broadcast({
+                    type: ServerEvents.PLAYER_LEFT,
+                    id: client.uuid
+                });
+                break;
         }
     }
 

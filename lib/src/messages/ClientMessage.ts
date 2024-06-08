@@ -9,4 +9,12 @@ interface PlayerLeavingMessage {
     type: ClientEvents.PLAYER_LEAVING
 }
 
-export type ClientMessage = PlayerConnectingMessage | PlayerLeavingMessage;
+interface ServerPingMessage {
+    type: ClientEvents.SERVER_PING,
+    date: number
+}
+
+type PlayerMessageType = PlayerConnectingMessage | PlayerLeavingMessage;
+type ServerMessageType = ServerPingMessage;
+
+export type ClientMessage = ServerMessageType | PlayerMessageType;

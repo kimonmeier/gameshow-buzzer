@@ -2,6 +2,8 @@ import type { ClientMessage } from "gameshow-lib/messages/ClientMessage";
 import WebSocketClient from "../connection/WebSocketClient";
 import WebSocketConnection from "../connection/WebSocketConnection";
 import PlayerManager from "./PlayerManager";
+import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
+import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
 
 export default class App {
     private readonly WebSocket: WebSocketConnection;
@@ -22,6 +24,10 @@ export default class App {
         this.WebSocket.addListener("message", (client: WebSocketClient, message: ClientMessage) => {
             console.log("Neue Nachricht vo dem Client: " + client.ip);
             console.log(message);
+
+            if (message.type == ClientEvents.SERVER_PING) {
+                client.send({ type: ServerEvents.SERVER_PING })
+            }
 
             this.PlayerManager.handleInputs(client, message);
         });

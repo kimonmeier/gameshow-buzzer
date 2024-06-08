@@ -4,6 +4,7 @@ import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 import type { ServerMessage } from "gameshow-lib/messages/ServerMessage";
 import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
 import { players } from "$lib/store/PlayerStore";
+import { alertStore } from "$lib/store/AlertStore";
 
 export default class App {
     private static instance: App;
@@ -25,20 +26,22 @@ export default class App {
     public startApp(): void {
         //this.client = new WebSocketClient("wss://gameshow.k-meier.ch");
         this.client = new WebSocketClient("ws://localhost:2222");
+        this.awaitConnection(20).then((result) => {
+            if (!result) {
+                alertStore.showError("Couldn't connect to the server!", true)
+            }
+        })
 
         this.client.recieve = (m) => this.recieve(m);
     }
 
     public async awaitConnection(timeout: number): Promise<boolean> {
-        console.log("await connection");
         let index = 0;
         while (!this.client.isOpen && index < timeout) {
             console.log("Checking", this.client.isOpen, index);
-            await new Promise(r => setTimeout(r, 10));
+            await new Promise(r => setTimeout(r, 100));
             index++;
         }
-
-        console.log("No checking anymore");
 
         return this.client.isOpen;
     }

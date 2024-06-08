@@ -19,7 +19,7 @@
         </div>
 
         <div class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center">
-            @player.Input
+            {player.input}
         </div>
 
         <div class="p-2 rounded-xl ml-2 {player.isInputLocked ? "w-36" : "w-80" } text-center { player.isInputLocked ? "bg-green-600" : "bg-indigo-600" }">
@@ -31,7 +31,6 @@
         </div>
 
         {#if player.isInputLocked}
-        
             <button class="bg-violet-600 p-2 ml-4 rounded-xl w-40">
                 <div>Eingabe freigeben</div>
             </button>
