@@ -4,31 +4,22 @@ import { createBasicPlayerStore, type BasePlayerStore } from "./PlayerStore";
 import { buzzerSound, buzzerSoundPlayed } from "./AudioStore";
 
 
-interface BuzzerStore extends Readable<BuzzerInfo[]>, BasePlayerStore<BuzzerInfo> {
+interface BuzzerStore extends Readable<BuzzerInfo[]> {
     clearBuzzing: () => void,
     playerBuzzed: (playerId: string, time: number) => void;
 }
 
-function create(playerId: string): BuzzerInfo {
-    return {
-        playerId: playerId,
-        isLocked: false,
-        buzzerTime: null
-    }
-}
-
 function createBuzzerStore(): BuzzerStore {
-    const { update, subscribe, set } = writable<BuzzerInfo[]>([]);
+    const { subscribe, set } = writable<BuzzerInfo[]>([]);
 
     return {
-        ...createBasicPlayerStore(create, update),  
         subscribe,
-        clearBuzzing: () => update(x => { x.forEach(element => element.buzzerTime = null); return x; }),
+        clearBuzzing: () => set([]),
         playerBuzzed: (playerId: string, time: number) => { 
             let array = get({subscribe});
-            array.find(x => x.playerId == playerId)!.buzzerTime = time;
+            array.push({ playerId, buzzerTime: time, isLocked: false })
 
-            set([...array].sort(z => z.buzzerTime ?? Number.MAX_VALUE))
+            set(array.sort(z => z.buzzerTime))
 
             if (get(buzzerSoundPlayed)) {
                 return;

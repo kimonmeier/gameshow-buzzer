@@ -10,7 +10,7 @@ export interface BasePlayerInfo {
 }
 
 export interface BuzzerInfo extends BasePlayerInfo {
-    buzzerTime: number | null,
+    buzzerTime: number,
 }
 
 export interface InputInfo extends BasePlayerInfo {

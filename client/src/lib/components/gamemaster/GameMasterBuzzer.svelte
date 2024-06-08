@@ -5,12 +5,11 @@
 	import GameMasterBuzzerEntry from "./GameMasterBuzzerEntry.svelte";
 
 
-    $: onlyBuzzedEntries = $buzzers.filter(x => x.buzzerTime != null)
-    $: buzzerEntries = onlyBuzzedEntries.map<PlayerBuzzerModel>((x, i) => ({
+    $: buzzerEntries = $buzzers.map<PlayerBuzzerModel>((x, i) => ({
         playerName: $players.find(z => z.id == x.playerId)!.name,
         timeBuzzedInMs: x.buzzerTime!,
-        differenceInMs: i == 0 ? 0 : (x.buzzerTime! - onlyBuzzedEntries[i-1].buzzerTime!)
-    })).sort(x => x.timeBuzzedInMs);
+        differenceInMs: i == 0 ? 0 : (x.buzzerTime! - $buzzers[i-1].buzzerTime!)
+    }));
 </script>
 
 <div class="flex flex-col">

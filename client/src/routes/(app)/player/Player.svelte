@@ -41,17 +41,17 @@
         });
     }
 
-    $: buzzerInfo = $buzzers.find(x => x.playerId == player.id)!;
+    $: buzzerInfo = $buzzers.find(x => x.playerId == player.id);
     $: inputInfo = $inputs.find(x => x.playerId == player.id)!;
     $: isBuzzerPersonallyLocked = $buzzers.filter(x => x.buzzerTime != null).length != 0;
     $: myBuzzerWasFirst = $buzzers.filter(x => x.buzzerTime != null).sort(x => x.buzzerTime!).at(0)?.playerId == player.id;
 
     $: buzzerBackgroundColor = (): string => {
-        if ((isBuzzerPersonallyLocked || $isBuzzerLocked) && buzzerInfo.buzzerTime == null) {
+        if ((isBuzzerPersonallyLocked || $isBuzzerLocked) && buzzerInfo == null) {
             return "bg-gray-600";
         }
 
-        if (buzzerInfo.buzzerTime == null && !(isBuzzerPersonallyLocked || $isBuzzerLocked)) {
+        if (buzzerInfo == null && !(isBuzzerPersonallyLocked || $isBuzzerLocked)) {
             return "bg-green-700";
         }
 

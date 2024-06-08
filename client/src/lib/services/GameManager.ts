@@ -5,7 +5,7 @@ import type { ServerMessage } from "gameshow-lib/messages/ServerMessage";
 import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
 import { players } from "$lib/store/PlayerStore";
 import { inputs } from "$lib/store/InputStore";
-import { buzzers } from "$lib/store/BuzzerStore";
+import { buzzers, isBuzzerLocked } from "$lib/store/BuzzerStore";
 import { alertStore } from "$lib/store/AlertStore";
 import { currentUserId, isLoggedIn } from "$lib/store/LoginStore";
 import { answerRightSound, answerWrongSound, buzzerSoundPlayed } from "$lib/store/AudioStore";
@@ -77,13 +77,11 @@ export default class App {
             case ServerEvents.PLAYER_JOINED:
                 players.addPlayer(m.id, m.name);
                 inputs.addPlayer(m.id);
-                buzzers.addPlayer(m.id);
                 break;
             
             case ServerEvents.PLAYER_LEFT:
                 players.removePlayer(m.id);
                 inputs.removePlayer(m.id);
-                buzzers.removePlayer(m.id);
                 break;
 
             case ServerEvents.PLAYER_POINTS_CHANGED:
@@ -113,7 +111,12 @@ export default class App {
             case ServerEvents.BUZZER_RELEASED:
                 buzzers.clearBuzzing();
                 buzzerSoundPlayed.set(false);
+                isBuzzerLocked.set(false);
                 break;
+            case ServerEvents.BUZZER_LOCKED:
+                isBuzzerLocked.set(true);
+                break;
+
             case ServerEvents.ANSWER_RIGHT:
                 get(answerRightSound).play();
                 break;
