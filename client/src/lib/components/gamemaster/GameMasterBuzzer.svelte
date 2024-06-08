@@ -9,7 +9,7 @@
     $: buzzerEntries = onlyBuzzedEntries.map<PlayerBuzzerModel>((x, i) => ({
         playerName: $players.find(z => z.id == x.playerId)!.name,
         timeBuzzedInMs: x.buzzerTime!,
-        differenceInMs: i == 0 ? 0 : (onlyBuzzedEntries[i-1].buzzerTime! - x.buzzerTime!)
+        differenceInMs: i == 0 ? 0 : (x.buzzerTime! - onlyBuzzedEntries[i-1].buzzerTime!)
     }));
 </script>
 
