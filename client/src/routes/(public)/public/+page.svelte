@@ -19,21 +19,35 @@
 <div class="bg-transparent flex flex-row items-center justify-center">
 	<div
 		class="{isFirstBuzzer
-			? 'bg-green-600'
+			? 'player-buzzer-indicator-pressed-background'
 			: buzzerInfo?.buzzerTime != null
-				? 'bg-yellow-500'
-				: 'bg-slate-700'} rounded-full w-10 h-10 flex-shrink-0"
+				? 'player-buzzer-indicator-late-pressed-background'
+				: 'player-buzzer-indicator-stale-background'} rounded-full w-10 h-10 flex-shrink-0 player-buzzer-indicator"
 	></div>
 
 	<div
-		class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10 overflow-hidden text-nowrap whitespace-nowrap"
+		class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10 overflow-hidden text-nowrap whitespace-nowrap player-input-indicator"
 	>
 		{inputInfo?.input}
 	</div>
 
 	<div
-		class="font-bold text-2xl p-1 bg-slate-500 rounded-full px-3 min-h-10 flex items-center flex-shrink-0"
+		class="font-bold text-2xl p-1 bg-slate-500 rounded-full px-3 min-h-10 flex items-center flex-shrink-0 player-buzzer-indicator"
 	>
 		{player?.points}
 	</div>
 </div>
+
+<style>
+	.player-buzzer-indicator-stale-background {
+		background-color: var(--player-buzzer-indicator-background-color, 'bg-slate-700');
+	}
+
+	.player-buzzer-indicator-late-pressed-background {
+		background-color: var(--player-buzzer-indicator-background-color, 'bg-yellow-500');
+	}
+
+	.player-buzzer-indicator-pressed-background {
+		background-color: var(--player-buzzer-indicator-background-color, 'bg-green-600');
+	}
+</style>
