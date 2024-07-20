@@ -44,7 +44,7 @@ export default class WebSocketClient {
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
 	public recieve(m: ServerMessage): void {
-	}	
+	}
 	
 	public connected(e: Event): void {
 		if (this.isReconnecting) {
