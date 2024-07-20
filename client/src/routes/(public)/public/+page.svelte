@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { BuzzerInfo, InputInfo, PlayerInfo } from '$lib/models/Player';
+	import type { BuzzerInfo, InputInfo } from '$lib/models/Player';
 	import { buzzers } from '$lib/store/BuzzerStore';
 	import { inputs } from '$lib/store/InputStore';
 	import { players } from '$lib/store/PlayerStore';
@@ -22,16 +22,18 @@
 			? 'bg-green-600'
 			: buzzerInfo?.buzzerTime != null
 				? 'bg-yellow-500'
-				: 'bg-slate-700'} rounded-full w-10 h-10"
+				: 'bg-slate-700'} rounded-full w-10 h-10 flex-shrink-0"
 	></div>
 
 	<div
-		class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10 overflow-hidden text-nowrap"
+		class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10 overflow-hidden text-nowrap whitespace-nowrap"
 	>
 		{inputInfo?.input}
 	</div>
 
-	<div class="font-bold text-2xl p-1 bg-slate-500 rounded-full px-3 min-h-10 flex items-center">
+	<div
+		class="font-bold text-2xl p-1 bg-slate-500 rounded-full px-3 min-h-10 flex items-center flex-shrink-0"
+	>
 		{player?.points}
 	</div>
 </div>
