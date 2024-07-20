@@ -25,11 +25,13 @@
 				: 'bg-slate-700'} rounded-full w-10 h-10"
 	></div>
 
-	<div class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10 overflow-hidden">
+	<div
+		class="bg-black mx-4 rounded-xl px-4 py-1 grow flex items-center min-h-10 overflow-hidden text-nowrap"
+	>
 		{inputInfo?.input}
 	</div>
 
-	<div class="font-bold p-1 bg-slate-500 rounded-xl px-5 min-h-10 flex items-center">
+	<div class="font-bold text-2xl p-1 bg-slate-500 rounded-full px-3 min-h-10 flex items-center">
 		{player?.points}
 	</div>
 </div>
