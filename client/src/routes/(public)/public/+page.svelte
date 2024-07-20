@@ -40,14 +40,14 @@
 
 <style>
 	.player-buzzer-indicator-stale-background {
-		background-color: var(--player-buzzer-indicator-background-color, 'bg-slate-700');
+		background-color: var(--player-buzzer-indicator-stale-background-color, rgb(51 65 85));
 	}
 
 	.player-buzzer-indicator-late-pressed-background {
-		background-color: var(--player-buzzer-indicator-background-color, 'bg-yellow-500');
+		background-color: var(--player-buzzer-indicator-late-background-color, rgb(234 179 8));
 	}
 
 	.player-buzzer-indicator-pressed-background {
-		background-color: var(--player-buzzer-indicator-background-color, 'bg-green-600');
+		background-color: var(--player-buzzer-indicator-pressed-background-color, rgb(101 163 13));
 	}
 </style>
