@@ -32,7 +32,7 @@
 	</div>
 
 	<div
-		class="font-bold text-2xl p-1 bg-slate-500 rounded-full px-3 min-h-10 flex items-center flex-shrink-0 player-buzzer-indicator"
+		class="font-bold text-2xl p-1 bg-slate-500 rounded-full px-3 min-h-10 flex items-center flex-shrink-0 player-points-indicator"
 	>
 		{player?.points}
 	</div>
