@@ -18,6 +18,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^8.56.7",
+		"@types/howler": "^2.2.11",
 		"autoprefixer": "^10.4.19",
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^9.1.0",
@@ -38,6 +39,6 @@
 	"type": "module",
 	"dependencies": {
 		"gameshow-lib": "file:../lib/dist/gameshow-lib-0.0.1.tgz",
-		"svelte-sound": "^0.6.0"
+		"howler": "^2.2.4"
 	}
 }
