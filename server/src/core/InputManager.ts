@@ -70,7 +70,7 @@ export default class InputManager {
                 this.connection.broadcastExcept({
                     type: ServerEvents.BUZZER_RELEASED,
                 },
-                    ...this.connection.clients.filter(x => this.playerBuzzerLocked.find(lockedId => x.uuid != lockedId))
+                    ...this.connection.clients.filter(x => this.playerBuzzerLocked.find(lockedId => x.uuid == lockedId))
                 )
                 break;
             case ClientEvents.GAMEMASTER_LOCK_BUZZER:
