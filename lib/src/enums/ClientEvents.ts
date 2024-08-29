@@ -9,7 +9,7 @@ export enum ClientEvents {
     /// This event describes what happens when the gamemaster releases the buzzer
     GAMEMASTER_RELEASE_BUZZER,
 
-    /// This event describes what happens when the gamemaster releases the buzzer
+    /// This event describes what happens when the gamemaster locks the buzzer
     GAMEMASTER_LOCK_BUZZER,
     
     /// This event describes what happens when the gamemaster locks the inputs
@@ -26,6 +26,12 @@ export enum ClientEvents {
 
     /// This event describes what happens when the gamemaster changes the points of a player
     GAMEMASTER_CHANGE_POINTS_BY_PLAYER,
+
+    /// This event describes what happens when the gamemaster locks the buzzer for one player
+    GAMEMASTER_LOCK_BUZZER_FOR_PLAYER,
+
+    /// This event describes what happens when the gamemaster releases the buzzer for one player
+    GAMEMASTER_RELEASE_BUZZER_FOR_PLAYER,
 
     /// This event describes what happens when the gamemaster selects a right answer
     GAMEMASTER_ANSWER_RIGHT,

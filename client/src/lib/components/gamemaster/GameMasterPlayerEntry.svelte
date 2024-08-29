@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PlayerInfo, BuzzerInfo, InputInfo } from '$lib/models/Player';
 	import App from '$lib/services/GameManager';
-	import { buzzers } from '$lib/store/BuzzerStore';
+	import { buzzers, isBuzzerLocked } from '$lib/store/BuzzerStore';
 	import { inputs } from '$lib/store/InputStore';
 	import { pointsInkrementRightAnswer } from '$lib/store/SettingsStore';
 	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
@@ -43,6 +43,24 @@
 		navigator.clipboard.writeText(location.host + '/buzzer/public.html?id=' + player.id);
 	}
 
+	function changeBuzzerLockState() {
+		if (playerBuzzerLocked) {
+			App.getInstance().sendMessage({
+				type: ClientEvents.GAMEMASTER_RELEASE_BUZZER_FOR_PLAYER,
+				playerId: player.id
+			});
+		} else {
+			App.getInstance().sendMessage({
+				type: ClientEvents.GAMEMASTER_LOCK_BUZZER_FOR_PLAYER,
+				playerId: player.id
+			});
+		}
+
+		playerBuzzerLocked = !playerBuzzerLocked;
+	}
+
+	let playerBuzzerLocked: boolean = false;
+
 	$: isFirstBuzzer = $buzzers.at(0)?.playerId == player.id;
 	$: buzzerInfo = $buzzers.find((x) => x.playerId == player.id) as BuzzerInfo | null;
 	$: inputInfo = $inputs.find((x) => x.playerId == player.id) as InputInfo;
@@ -50,14 +68,17 @@
 
 <div class="flex flex-row my-1 items-center">
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div
+	<button
 		class="{isFirstBuzzer
 			? 'bg-green-600'
-			: buzzerInfo != null
-				? 'bg-yellow-500'
-				: 'bg-slate-700'} rounded-full w-10 h-10"
+			: isBuzzerLocked
+				? 'bg-red-600'
+				: buzzerInfo != null
+					? 'bg-yellow-500'
+					: 'bg-slate-700'} rounded-full w-10 h-10"
 		on:dblclick={copyLinkForObs}
-	></div>
+		on:click={changeBuzzerLockState}
+	></button>
 
 	<div class="font-bold text-right w-20">
 		{player.name}
