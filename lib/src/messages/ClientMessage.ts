@@ -39,6 +39,12 @@ interface GameMasterDecreasePointsMessage {
     points: number;
 }
 
+interface GameMasterChangePointsMessage {
+    type: ClientEvents.GAMEMASTER_CHANGE_POINTS_BY_PLAYER,
+    playerId: string,
+    points: number
+}
+
 interface GameMasterAnswerRightMessage {
     type: ClientEvents.GAMEMASTER_ANSWER_RIGHT,
 }
@@ -66,7 +72,7 @@ interface RequestGamemasterMessage {
 }
 
 type GameMasterAnswerMessageType = GameMasterAnswerRightMessage | GameMasterAnswerWrongMessage;
-type GameMasterPointsMessageType = GameMasterIncreasePointsMessage | GameMasterDecreasePointsMessage;
+type GameMasterPointsMessageType = GameMasterIncreasePointsMessage | GameMasterDecreasePointsMessage | GameMasterChangePointsMessage;
 type GameMasterInputMessageType = GameMasterReleaseInputsMessage | GameMasterLockInputsMessage | GameMasterLockBuzzerMessage;
 type GameMasterMessageType = GameMasterReleaseBuzzerMessage | GameMasterInputMessageType | GameMasterPointsMessageType | GameMasterAnswerMessageType;
 
