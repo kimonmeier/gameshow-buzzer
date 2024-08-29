@@ -71,7 +71,7 @@
 	<button
 		class="{isFirstBuzzer
 			? 'bg-green-600'
-			: isBuzzerLocked
+			: playerBuzzerLocked
 				? 'bg-red-600'
 				: buzzerInfo != null
 					? 'bg-yellow-500'
