@@ -49,7 +49,7 @@
 
 <svelte:window on:beforeunload={beforeunload} on:keydown={keyDown} />
 <button
-	class="absolute z-0 w-12 h-12 top-0 left-0 hover:text-white text-transparent"
+	class="absolute z-0 w-12 h-12 top-0 right-0 hover:text-white text-transparent"
 	on:click={() => (steuerungVisible = !steuerungVisible)}
 >
 	<Icon icon="mdi:cog" height="100%"></Icon>
