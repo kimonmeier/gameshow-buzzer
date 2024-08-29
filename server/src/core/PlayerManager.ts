@@ -83,6 +83,15 @@ export default class PlayerManager {
                     points: increasedPlayerPoints
                 })
                 break;
+            case ClientEvents.GAMEMASTER_CHANGE_POINTS_BY_PLAYER:
+                this.gameProgress.set(m.playerId, m.points);
+                
+                this.connection.broadcast({
+                    type: ServerEvents.PLAYER_POINTS_CHANGED,
+                    playerId: m.playerId,
+                    points: m.points
+                });
+                break;
         }
     }
 

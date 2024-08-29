@@ -52,7 +52,7 @@ export default class WebSocketConnection
 		for (const clientId of clients) this.sendTo(this._clients.filter(x => x.uuid == clientId), m);
 	}
 
-	public get clients(): Client[] {
+	public get clients(): WebSocketClient[] {
 		return this._clients;
 	}
 

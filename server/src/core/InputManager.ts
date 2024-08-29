@@ -7,6 +7,7 @@ import { ClientMessage } from "gameshow-lib/messages/ClientMessage";
 export default class InputManager {
     private readonly connection: WebSocketConnection;
     private readonly buzzerPressed: Map<string, number> = new Map();
+    private playerBuzzerLocked: string[] = [];
 
     public constructor (connection: WebSocketConnection) {
         this.connection = connection;
@@ -66,9 +67,11 @@ export default class InputManager {
             case ClientEvents.GAMEMASTER_RELEASE_BUZZER:
                 this.buzzerPressed.clear();
 
-                this.connection.broadcast({
+                this.connection.broadcastExcept({
                     type: ServerEvents.BUZZER_RELEASED,
-                })
+                },
+                    ...this.connection.clients.filter(x => this.playerBuzzerLocked.find(lockedId => x.uuid == lockedId))
+                )
                 break;
             case ClientEvents.GAMEMASTER_LOCK_BUZZER:
                 this.connection.broadcast({
@@ -84,6 +87,17 @@ export default class InputManager {
                 this.connection.broadcast({
                     type: ServerEvents.ANSWER_WRONG
                 });
+                break;
+            case ClientEvents.GAMEMASTER_LOCK_BUZZER_FOR_PLAYER:
+                this.playerBuzzerLocked.push(m.playerId);
+
+                this.connection.clients.find(x => x.uuid == m.playerId)?.send({
+                    type: ServerEvents.BUZZER_LOCKED,
+                })
+                break;
+            case ClientEvents.GAMEMASTER_RELEASE_BUZZER_FOR_PLAYER:
+                this.playerBuzzerLocked = this.playerBuzzerLocked.filter(x => x != m.playerId);
+                break;
         }
 
     }
