@@ -70,7 +70,7 @@ export default class InputManager {
                 this.connection.broadcastExcept({
                     type: ServerEvents.BUZZER_RELEASED,
                 },
-                    ...this.connection.clients.filter(x => !this.playerBuzzerLocked.find(lockedId => x.uuid != lockedId))
+                    ...this.connection.clients.filter(x => this.playerBuzzerLocked.find(lockedId => x.uuid != lockedId))
                 )
                 break;
             case ClientEvents.GAMEMASTER_LOCK_BUZZER:
@@ -90,7 +90,7 @@ export default class InputManager {
                 break;
             case ClientEvents.GAMEMASTER_LOCK_BUZZER_FOR_PLAYER:
                 this.playerBuzzerLocked.push(m.playerId);
-                
+
                 this.connection.clients.find(x => x.uuid == m.playerId)?.send({
                     type: ServerEvents.BUZZER_LOCKED,
                 })
