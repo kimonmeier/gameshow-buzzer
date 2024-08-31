@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@danielemariani/ts-event-bus": "^1.2.0"
+  }
+}
