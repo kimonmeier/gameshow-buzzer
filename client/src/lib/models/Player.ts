@@ -7,6 +7,7 @@ export interface PlayerInfo {
 
 export interface BasePlayerInfo {
     playerId: string;
+    teamId?: string;
     isLocked: boolean
 }
 

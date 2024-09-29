@@ -1,15 +1,15 @@
-import { type BasePlayerInfo, type BuzzerInfo, type PlayerInfo } from "$lib/models/Player";
-import { writable, type Readable, get, type Updater, type Subscriber } from "svelte/store";
+import { type BasePlayerInfo, type PlayerInfo } from "$lib/models/Player";
+import { writable, type Readable, get, type Updater } from "svelte/store";
 
 
 interface PlayerStore extends Readable<PlayerInfo[]> {
-    addPlayer: (playerId: string, name: string) => void;
+    addPlayer: (playerId: string, name: string, teamId: string | undefined) => void;
     removePlayer: (playerId: string) => void;
     setPoints: (playerId: string, points: number) => void;
 }
 
-export interface BasePlayerStore<T> {
-    addPlayer: (playerId: string) => void;
+export interface BasePlayerStore {
+    addPlayer: (playerId: string, teamId:  string | undefined) => void;
     removePlayer: (playerId: string) => void;
     lockedForPlayer: (playerId: string) => void;
     locked: () => void;
@@ -17,9 +17,9 @@ export interface BasePlayerStore<T> {
     released: () => void;
 }
 
-export function createBasicPlayerStore<T extends BasePlayerInfo>(createFunction: ((playerId: string) => T), update: ((this: void, updater: Updater<T[]>) => void)): BasePlayerStore<T> {
+export function createBasicPlayerStore<T extends BasePlayerInfo>(createFunction: ((playerId: string, teamId: string | undefined) => T), update: ((this: void, updater: Updater<T[]>) => void)): BasePlayerStore {
     return {
-        addPlayer: (playerId: string) => update(x => [...x, createFunction(playerId)]),       
+        addPlayer: (playerId: string, teamId:  string | undefined) => update(x => [...x, createFunction(playerId, teamId)]),       
         removePlayer: (playerId: string) => update(x => x.filter(z => z.playerId != playerId)),
         locked: () => update(x => { x.forEach(element => element.isLocked = true); return x; }),
         lockedForPlayer: (playerId: string) => update(x => { x.find(z => z.playerId == playerId)!.isLocked = true; return x; }),

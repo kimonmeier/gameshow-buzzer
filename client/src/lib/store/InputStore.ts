@@ -3,13 +3,14 @@ import { writable, type Readable } from "svelte/store";
 import { createBasicPlayerStore, type BasePlayerStore } from "./PlayerStore";
 
 
-interface InputStore extends Readable<InputInfo[]>, BasePlayerStore<InputInfo> {
+interface InputStore extends Readable<InputInfo[]>, BasePlayerStore {
     inputChanged: (playerId: string, input: string) => void; 
 }
 
-function create(playerId: string): InputInfo {
+function create(playerId: string, teamId?: string): InputInfo {
     return {
         playerId: playerId,
+        teamId: teamId,
         input: '',
         isLocked: false
     }
@@ -21,7 +22,20 @@ function createBuzzerStore(): InputStore {
     return {
         ...createBasicPlayerStore(create, update),  
         subscribe,
-        inputChanged: (playerId: string, input: string) => update(x => { x.find(z => z.playerId == playerId)!.input = input; return x; }),
+        inputChanged: (playerId: string, input: string) => update(x => {
+            const currentPlayer = x.find(z => z.playerId == playerId);
+
+            if (currentPlayer!.teamId) {
+                const teamMates = x.filter(x => x.teamId == currentPlayer?.teamId);
+                teamMates.forEach((player) => {
+                    player.input = input;
+                })
+            }
+            
+            currentPlayer!.input = input;
+
+            return x;
+        }),
     }
 }
 

@@ -20,6 +20,7 @@
 	import { Sound } from '$lib/components/sound/Sound';
 	import Icon from '@iconify/svelte';
 	import VolumeControlsModal from '$lib/components/controls/VolumeControlsModal.svelte';
+	import { isInputFocused } from '$lib/store/InputStore';
 
 	$buzzerSound = new Sound(buzzerSoundFile, buzzerSoundVolume, { volume: 0.2 });
 	$answerRightSound = new Sound(answerRightSoundFile, answerRightSoundVolume, { volume: 0.4 });
@@ -40,6 +41,11 @@
 			if ($isBuzzerLocked) {
 				return;
 			}
+
+			if ($isInputFocused) {
+				return;
+			}
+
 			App.getInstance().sendMessage({
 				type: ClientEvents.PLAYER_BUZZER_PRESSED
 			});

@@ -76,8 +76,8 @@ export default class App {
                 isLoggedIn.set(true);
                 break;
             case ServerEvents.PLAYER_JOINED:
-                players.addPlayer(m.id, m.name);
-                inputs.addPlayer(m.id);
+                players.addPlayer(m.id, m.name, m.teamId);
+                inputs.addPlayer(m.id, m.teamId);
                 break;
             
             case ServerEvents.PLAYER_LEFT:
@@ -107,8 +107,10 @@ export default class App {
                 break;
 
             case ServerEvents.BUZZER_PRESSED_BY_PLAYER:
-                buzzers.playerBuzzed(m.playerId, m.time);
-                break;
+                { const currentPlayer = get(players).find(x => x.id == m.playerId)!;
+                
+                buzzers.playerBuzzed(m.playerId, currentPlayer.teamId, m.time);
+                break; }
             case ServerEvents.BUZZER_RELEASED:
                 buzzers.clearBuzzing();
                 buzzerSoundPlayed.set(false);

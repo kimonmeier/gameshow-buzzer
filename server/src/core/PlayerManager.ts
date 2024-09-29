@@ -55,6 +55,7 @@ export default class PlayerManager {
                 }
 
                 this.gameMasterId = client.uuid;
+                break;
             case ClientEvents.PLAYER_LEAVING:
                 this.gameProgress.delete(client.uuid);
                 this.players.delete(client);
@@ -65,7 +66,7 @@ export default class PlayerManager {
                 });
                 break;
             case ClientEvents.GAMEMASTER_DECREASE_POINTS_BY_PLAYER:
-                let decreasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) - m.points;
+                const decreasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) - m.points;
                 this.gameProgress.set(m.playerId, decreasedPlayerPoints);
 
                 this.connection.broadcast({
@@ -75,7 +76,7 @@ export default class PlayerManager {
                 })
                 break;
             case ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER:
-                let increasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) + m.points;
+                const increasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) + m.points;
                 this.gameProgress.set(m.playerId, increasedPlayerPoints);
 
                 this.connection.broadcast({
