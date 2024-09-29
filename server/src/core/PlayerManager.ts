@@ -39,6 +39,7 @@ export default class PlayerManager {
                     type: ServerEvents.PLAYER_JOINED,
                     id: client.uuid,
                     name: m.name,
+                    teamId: m.teamId
                 });
 
                 client.send({

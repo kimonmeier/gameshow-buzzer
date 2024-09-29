@@ -5,11 +5,13 @@ import PlayerManager from "./PlayerManager";
 import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
 import InputManager from "./InputManager";
+import { TeamManager } from "./TeamManager";
 
 export default class App {
     private readonly WebSocket: WebSocketConnection;
     private readonly PlayerManager: PlayerManager;
     private readonly InputManager: InputManager;
+    private readonly TeamManager: TeamManager;
     public lastControlled: number = 0;
     public currentPlayer: number = 0;
 
@@ -17,6 +19,7 @@ export default class App {
         this.WebSocket = new WebSocketConnection();
         this.PlayerManager = new PlayerManager(this.WebSocket);
         this.InputManager = new InputManager(this.WebSocket);
+        this.TeamManager = new TeamManager(this.WebSocket, this.PlayerManager);
     }
 
     public startApp(): void {
@@ -29,12 +32,13 @@ export default class App {
                 client.send({ type: ServerEvents.SERVER_PING })
                 return;
             }
-
+            
             console.log("Neue Nachricht vo dem Client: " + client.ip);
             console.log(message);
 
             this.PlayerManager.handleInputs(client, message);
             this.InputManager.handleInputs(client, message);
+            this.TeamManager.handleInputs(client, message);
         });
     }
 

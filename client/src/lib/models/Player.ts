@@ -1,6 +1,7 @@
 export interface PlayerInfo {
     id: string;
     name: string;
+    teamId?: string;
     points: number;
 }
 

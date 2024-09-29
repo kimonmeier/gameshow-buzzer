@@ -33,7 +33,7 @@ function createPlayerStore(): PlayerStore {
 
     return {
         subscribe,
-        addPlayer: (playerId: string, name: string) => update(x => [...x, { id: playerId, name, input: '', isBuzzerPressed: false, isInputLocked: false, points: 0 }]),
+        addPlayer: (playerId: string, name: string, teamId?: string) => update(x => [...x, { id: playerId, name, teamId, input: '', isBuzzerPressed: false, isInputLocked: false, points: 0 }]),
         removePlayer: (playerId: string) => update(x => x.filter(z => z.id != playerId)),
         setPoints: (playerId: string, points: number) => {
             get({subscribe}).find(x => x.id == playerId)!.points = points;

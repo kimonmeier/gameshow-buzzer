@@ -4,7 +4,7 @@ interface PlayerJoinedMessage {
     type: ServerEvents.PLAYER_JOINED,
     id: string;
     name: string;
-    teamId: string;
+    teamId?: string;
 }
 
 interface PlayerLeftMessage {

@@ -10,6 +10,7 @@ import { alertStore } from "$lib/store/AlertStore";
 import { currentUserId, isLoggedIn } from "$lib/store/LoginStore";
 import { answerRightSound, answerWrongSound, buzzerSoundPlayed } from "$lib/store/AudioStore";
 import { get } from "svelte/store";
+import { teamStore } from "$lib/store/TeamStore";
 
 export default class App {
     private static instance: App;
@@ -29,8 +30,8 @@ export default class App {
     }
 
     public startApp(): void {
-        this.client = new WebSocketClient("wss://gameshow.k-meier.ch/buzzer/socket");
-        //this.client = new WebSocketClient("ws://localhost:2222");
+        //this.client = new WebSocketClient("wss://gameshow.k-meier.ch/buzzer/socket");
+        this.client = new WebSocketClient("ws://localhost:2222");
         this.awaitConnection(20).then((result) => {
             if (!result) {
                 alertStore.showError("Couldn't connect to the server!", true)
@@ -123,7 +124,10 @@ export default class App {
             case ServerEvents.ANSWER_WRONG:
                 get(answerWrongSound).play();
                 break;
-            
+            case ServerEvents.TEAMS_CHANGED:
+                teamStore.set(m.teams);
+                break;
+
             case ServerEvents.SERVER_PING:
                 console.log("Player pinged");
                 break;

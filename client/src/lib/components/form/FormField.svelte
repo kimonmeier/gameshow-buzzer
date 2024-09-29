@@ -8,7 +8,7 @@
     <label class="px-2 min-w-32 text-right" for={label}>
         {label}:
     </label>
-    <div>
+    <div class="text-black">
         <slot />
     </div>
 </div>

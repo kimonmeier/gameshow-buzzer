@@ -9,6 +9,11 @@
 	import { onMount } from "svelte";
 	import App from '$lib/services/GameManager';
 	import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
+	import GameMasterTeams from "$lib/components/gamemaster/GameMasterTeams.svelte";
+	import { teamStore } from "$lib/store/TeamStore";
+	import GroupBox from "$lib/components/groupBox/GroupBox.svelte";
+	import type { PlayerInfo } from "$lib/models/Player";
+	import type { TeamModel } from "$lib/models/Team";
 
 
     let tabItems: Tab[] = [
@@ -23,6 +28,10 @@
         {
             name: "Buzzer",
             component: GameMasterBuzzer
+        },
+        {
+            name: "Teams",
+            component: GameMasterTeams
         }
     ]
 
@@ -41,6 +50,11 @@
             loggedIn = true;
         }, 200)
     }
+
+    function lul(player: PlayerInfo[], team: TeamModel): PlayerInfo[] {
+        console.log("LUL", player);
+        return player.filter(x => x.teamId == team.id);
+    }
 </script>
 
 
@@ -55,9 +69,19 @@
                     Keine Spieler gefunden!
                 </h3>
             {:else}
-                {#each $players as player}
-                    <GameMasterPlayerEntry {player} />
-                {/each}
+                {#if $teamStore.length > 0}
+                    {#each $teamStore as team}
+                        <GroupBox title="Team {team.name}">  
+                            {#each lul($players, team) as player}
+                                <GameMasterPlayerEntry {player} />
+                            {/each}
+                        </GroupBox>
+                    {/each}
+                {:else}
+                    {#each $players as player}
+                        <GameMasterPlayerEntry {player} />
+                    {/each}
+                {/if}
             {/if}
         </div>
         {:else}
