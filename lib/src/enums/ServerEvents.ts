@@ -39,5 +39,8 @@ export enum ServerEvents {
     SERVER_CLOSED,
 
     /// Ping event
-    SERVER_PING
+    SERVER_PING,
+
+    /// Teams Changed
+    TEAMS_CHANGED
 }

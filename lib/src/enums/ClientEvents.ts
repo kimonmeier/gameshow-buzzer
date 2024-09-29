@@ -49,5 +49,9 @@ export enum ClientEvents {
     PLAYER_BUZZER_PRESSED,
 
     /// Sends a ping request to the server to keep the connection open
-    SERVER_PING
+    SERVER_PING,
+
+    GAMEMASTER_TEAM_CREATE,
+
+    GAMEMASTER_TEAM_DELETE,
 }

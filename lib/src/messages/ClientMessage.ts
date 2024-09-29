@@ -3,6 +3,7 @@ import { ClientEvents } from "../enums/ClientEvents"
 interface PlayerConnectingMessage {
     type: ClientEvents.PLAYER_CONNECTING,
     name: string,
+    teamId?: string
 }
 
 interface PlayerLeavingMessage {
@@ -81,10 +82,21 @@ interface RequestGamemasterMessage {
     type: ClientEvents.REQUEST_GAMEMASTER,
 }
 
+interface GameMasterCreateTeamMessage {
+    type: ClientEvents.GAMEMASTER_TEAM_CREATE,
+    name: string
+}
+
+interface GameMasterDeleteTeamMessage {
+    type: ClientEvents.GAMEMASTER_TEAM_DELETE,
+    teamId: string
+}
+
+type GameMasterTeamMessageType = GameMasterCreateTeamMessage | GameMasterDeleteTeamMessage;
 type GameMasterAnswerMessageType = GameMasterAnswerRightMessage | GameMasterAnswerWrongMessage;
 type GameMasterPointsMessageType = GameMasterIncreasePointsMessage | GameMasterDecreasePointsMessage | GameMasterChangePointsMessage;
 type GameMasterInputMessageType = GameMasterReleaseInputsMessage | GameMasterLockInputsMessage | GameMasterLockBuzzerMessage | GameMasterReleaseBuzzerForPlayerMessage | GameMasterLockBuzzerForPlayerMessage;
-type GameMasterMessageType = GameMasterReleaseBuzzerMessage | GameMasterInputMessageType | GameMasterPointsMessageType | GameMasterAnswerMessageType;
+type GameMasterMessageType = GameMasterReleaseBuzzerMessage | GameMasterInputMessageType | GameMasterPointsMessageType | GameMasterAnswerMessageType | GameMasterTeamMessageType;
 
 type PlayerMessageType = PlayerConnectingMessage | PlayerLeavingMessage | PlayerInputChangedMessage | PlayerBuzzerPressedMessage;
 

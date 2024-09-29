@@ -4,6 +4,7 @@ interface PlayerJoinedMessage {
     type: ServerEvents.PLAYER_JOINED,
     id: string;
     name: string;
+    teamId: string;
 }
 
 interface PlayerLeftMessage {
@@ -76,6 +77,11 @@ interface AnswerWrongMessage {
     type: ServerEvents.ANSWER_WRONG;
 }
 
+interface TeamsChangedMessage {
+    type: ServerEvents.TEAMS_CHANGED,
+    teams: { id: string, name: string }[]
+}
+
 type PlayerInputEventType = PlayerInputChangedMessage | PlayerInputLockedMessage | PlayerInputReleasedMessage;
 type PlayerEventType = PlayerSetId | PlayerJoinedMessage | PlayerLeftMessage | PlayerPointsChangedMessage | PlayerInputEventType;
 
@@ -87,4 +93,4 @@ type BuzzerEventType = PlayerBuzzerPressedMessage | BuzzerReleasedMessage | Buzz
 
 type ServerEventType = ServerClosedMessage | ServerPingMessage;
 
-export type ServerMessage = PlayerEventType | ServerEventType | BuzzerEventType | InputEventType | AnswerEventType;
+export type ServerMessage = PlayerEventType | ServerEventType | BuzzerEventType | InputEventType | AnswerEventType | TeamsChangedMessage;
