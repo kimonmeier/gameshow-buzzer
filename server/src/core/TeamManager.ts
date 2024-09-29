@@ -4,6 +4,7 @@ import WebSocketClient from "connection/WebSocketClient";
 import { ClientMessage } from "gameshow-lib/messages/ClientMessage";
 import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
 import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
+import { v4 as uuidv4,} from 'uuid';
 
 export class TeamManager {
     private readonly connection: WebSocketConnection;
@@ -20,7 +21,7 @@ export class TeamManager {
         switch (m.type) {
             case ClientEvents.GAMEMASTER_TEAM_CREATE:
                 this.teams.push({
-                    id: crypto.randomUUID(),
+                    id: uuidv4(),
                     name: m.name
                 })
 

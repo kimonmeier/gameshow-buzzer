@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "gameshow-lib": "file:../lib/dist/gameshow-lib-0.0.1.tgz",
-    "uuid": "^9.0.0",
+    "uuid": "^9.0.1",
     "ws": "^8.17.0"
   }
 }
