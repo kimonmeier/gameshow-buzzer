@@ -3,19 +3,21 @@
 	import Select from '$lib/components/select/Select.svelte';
 	import type { TeamModel } from '$lib/models/Team';
 	import App from '$lib/services/GameManager';
+	import { currentUserId } from '$lib/store/LoginStore';
 	import { teamStore } from '$lib/store/TeamStore';
-	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
+	import type { PlayerId } from 'gameshow-lib/Types';
 
 	let name: string;
 	let team: TeamModel;
 
 	function loginUser() {
 		console.log('Login user', team);
-		App.getInstance().sendMessage({
-			type: ClientEvents.PLAYER_CONNECTING,
-			name: name,
-			teamId: team?.id
-		});
+
+		App.getSocket()
+			.timeout(1000)
+			.emit('PLAYER_CONNECTING', name, team?.id, (error, playerId) => {
+				$currentUserId = playerId;
+			});
 	}
 </script>
 

@@ -1,43 +1,41 @@
-import WebSocketConnection from "connection/WebSocketConnection";
+import { PlayerId, TeamId } from "gameshow-lib/Types";
+import { AppServer, AppSocket } from "./App";
 import PlayerManager from "./PlayerManager";
-import WebSocketClient from "connection/WebSocketClient";
-import { ClientMessage } from "gameshow-lib/messages/ClientMessage";
-import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
-import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
 import { v4 as uuidv4,} from 'uuid';
+import { BasicManager } from "./BasicManager";
+import { on } from "events";
 
-export class TeamManager {
-    private readonly connection: WebSocketConnection;
-    private readonly playerManager: PlayerManager;
+export class TeamManager implements BasicManager {
+    private readonly connection: AppServer;
 
-    private teams: {id: string, name: string}[] = [];
+    private teams: { id: TeamId, name: string }[] = [];
 
-    public constructor(connection: WebSocketConnection, playerManager: PlayerManager) {
+    public constructor(connection: AppServer) {
         this.connection = connection;
-        this.playerManager = playerManager;
     }
 
-    public handleInputs(client: WebSocketClient, m: ClientMessage): void {
-        switch (m.type) {
-            case ClientEvents.GAMEMASTER_TEAM_CREATE:
-                this.teams.push({
-                    id: uuidv4(),
-                    name: m.name
-                })
+    public registerSocket(socket: AppSocket, uuid: PlayerId): void {
+        socket
+            .on('GAMEMASTER_TEAM_CREATE', (name) => this.createTeam(name))
+            .on('GAMEMASTER_TEAM_DELETE', (teamId) => this.removeTeam(teamId));
+    }
 
-                this.connection.broadcast({
-                    type: ServerEvents.TEAMS_CHANGED,
-                    teams: this.teams
-                })
-                break;
-            case ClientEvents.GAMEMASTER_TEAM_DELETE:
-                this.teams = this.teams.filter(x => x.id != m.teamId);
+    public unregisterSocket(Socket: AppSocket, uuid: PlayerId): void {
+        throw new Error("Not implemented");
+    }
 
-                this.connection.broadcast({
-                    type: ServerEvents.TEAMS_CHANGED,
-                    teams: this.teams
-                })
-                break;
-        }
+    private createTeam(teamName: string): void {
+        this.teams.push({
+            id: uuidv4() as TeamId,
+            name: teamName
+        })
+
+        this.connection.emit('TEAMS_CHANGED', this.teams);
+    }
+
+    private removeTeam(teamId: TeamId): void {
+        this.teams = this.teams.filter(x => x.id != teamId);
+
+        this.connection.emit('TEAMS_CHANGED', this.teams);
     }
 }

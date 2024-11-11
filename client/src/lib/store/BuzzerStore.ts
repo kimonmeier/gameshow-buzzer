@@ -2,11 +2,12 @@ import type { BuzzerInfo } from "$lib/models/Player";
 import { writable, type Readable, get } from "svelte/store";
 import { buzzerSound, buzzerSoundPlayed } from "./AudioStore";
 import { players } from "./PlayerStore";
+import type { PlayerId, TeamId } from "gameshow-lib/Types";
 
 
 interface BuzzerStore extends Readable<BuzzerInfo[]> {
     clearBuzzing: () => void,
-    playerBuzzed: (playerId: string, teamId: string | undefined, time: number) => void;
+    playerBuzzed: (playerId: PlayerId, teamId: TeamId | undefined, time: number) => void;
 }
 
 function createBuzzerStore(): BuzzerStore {
@@ -15,7 +16,7 @@ function createBuzzerStore(): BuzzerStore {
     return {
         subscribe,
         clearBuzzing: () => set([]),
-        playerBuzzed: (playerId: string, teamId: string | undefined, time: number) => { 
+        playerBuzzed: (playerId: PlayerId, teamId: TeamId | undefined, time: number) => { 
             const array = get({subscribe});
             array.push({ playerId, teamId: teamId, buzzerTime: time, isLocked: false })
             const currentPlayers = get(players);

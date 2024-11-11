@@ -1,42 +1,34 @@
 <script lang="ts">
 	import type { PlayerInfo, BuzzerInfo, InputInfo } from '$lib/models/Player';
 	import App from '$lib/services/GameManager';
-	import { buzzers, isBuzzerLocked } from '$lib/store/BuzzerStore';
+	import { buzzers } from '$lib/store/BuzzerStore';
 	import { inputs } from '$lib/store/InputStore';
 	import { pointsInkrementRightAnswer } from '$lib/store/SettingsStore';
-	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
 
 	export let player: PlayerInfo;
 
 	function releaseInput() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_RELEASE_INPUTS,
-			playerId: player.id
-		});
+		App.getSocket().emit('GAMEMASTER_RELEASE_INPUTS', player.id);
 	}
 
 	function increasePoints() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER,
-			playerId: player.id,
-			points: $pointsInkrementRightAnswer
-		});
+		App.getSocket().emit(
+			'GAMEMASTER_INCREASE_POINTS_BY_PLAYER',
+			player.id,
+			$pointsInkrementRightAnswer
+		);
 	}
 
 	function decreasePoints() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_DECREASE_POINTS_BY_PLAYER,
-			playerId: player.id,
-			points: $pointsInkrementRightAnswer
-		});
+		App.getSocket().emit(
+			'GAMEMASTER_DECREASE_POINTS_BY_PLAYER',
+			player.id,
+			$pointsInkrementRightAnswer
+		);
 	}
 
 	function changePoints() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_CHANGE_POINTS_BY_PLAYER,
-			playerId: player.id,
-			points: player.points
-		});
+		App.getSocket().emit('GAMEMASTER_CHANGE_POINTS_BY_PLAYER', player.id, player.points);
 	}
 
 	function copyLinkForObs() {
@@ -45,15 +37,9 @@
 
 	function changeBuzzerLockState() {
 		if (playerBuzzerLocked) {
-			App.getInstance().sendMessage({
-				type: ClientEvents.GAMEMASTER_RELEASE_BUZZER_FOR_PLAYER,
-				playerId: player.id
-			});
+			App.getSocket().emit('GAMEMASTER_RELEASE_BUZZER_FOR_PLAYER', player.id);
 		} else {
-			App.getInstance().sendMessage({
-				type: ClientEvents.GAMEMASTER_LOCK_BUZZER_FOR_PLAYER,
-				playerId: player.id
-			});
+			App.getSocket().emit('GAMEMASTER_LOCK_BUZZER_FOR_PLAYER', player.id);
 		}
 
 		playerBuzzerLocked = !playerBuzzerLocked;

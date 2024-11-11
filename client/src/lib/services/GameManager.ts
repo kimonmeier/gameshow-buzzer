@@ -1,140 +1,89 @@
-import type { ClientMessage } from "gameshow-lib/messages/ClientMessage";
-import WebSocketClient from "./WebSocketClient";
-import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
-import type { ServerMessage } from "gameshow-lib/messages/ServerMessage";
-import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
-import { players } from "$lib/store/PlayerStore";
-import { inputs } from "$lib/store/InputStore";
-import { buzzers, isBuzzerLocked } from "$lib/store/BuzzerStore";
-import { alertStore } from "$lib/store/AlertStore";
-import { currentUserId, isLoggedIn } from "$lib/store/LoginStore";
-import { answerRightSound, answerWrongSound, buzzerSoundPlayed } from "$lib/store/AudioStore";
-import { get } from "svelte/store";
-import { teamStore } from "$lib/store/TeamStore";
+import { players } from '$lib/store/PlayerStore';
+import { inputs } from '$lib/store/InputStore';
+import { buzzers, isBuzzerLocked } from '$lib/store/BuzzerStore';
+import { answerRightSound, answerWrongSound, buzzerSoundPlayed } from '$lib/store/AudioStore';
+import { get } from 'svelte/store';
+import { teamStore } from '$lib/store/TeamStore';
+import { io, type Socket } from 'socket.io-client';
+import type { ServerToClientEvents } from 'gameshow-lib/ServerToClientEvents';
+import type { ClientToServerEvents } from 'gameshow-lib/ClientToServerEvents';
+
+export type AppSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 export default class App {
-    private static instance: App;
+	private static instance: App;
 
-    public static getInstance(): App {
-        if (App.instance == undefined) {
-            new App();
-        }
+	public static getInstance(): App {
+		if (App.instance == undefined) {
+			new App();
+		}
 
-        return App.instance;
-    }
+		return App.instance;
+	}
 
-    private client!: WebSocketClient;
+	public static getSocket(): AppSocket {
+		return this.getInstance().client;
+	}
 
-    private constructor () {
-        App.instance = this;
-    }
+	private client!: AppSocket;
 
-    public startApp(): void {
-        this.client = new WebSocketClient("wss://gameshow.k-meier.ch/buzzer/socket");
-        //this.client = new WebSocketClient("ws://localhost:2222");
-        this.awaitConnection(20).then((result) => {
-            if (!result) {
-                alertStore.showError("Couldn't connect to the server!", true)
-            }
-        })
+	private constructor() {
+		App.instance = this;
+	}
 
-        this.client.recieve = (m) => this.recieve(m);
-    }
+	public startApp(): void {
+		this.client = io({
+			autoConnect: true,
+			reconnection: true,
+			reconnectionAttempts: 10000
+		});
+		this.registerHandlers(this.client);
 
-    public async awaitConnection(timeout: number): Promise<boolean> {
-        let index = 0;
-        while (!this.client.isOpen && index < timeout) {
-            console.log("Checking", this.client.isOpen, index);
-            await new Promise(r => setTimeout(r, 100));
-            index++;
-        }
+		this.client.connect();
+	}
 
-        return this.client.isOpen;
-    }
+	public get IsConnected() {
+		return this.client?.connected ?? false;
+	}
 
-    public get IsConnected() {
-        return this.client?.isOpen ?? false;
-    }
+	public stopApp(): void {
+		this.client.emit('PLAYER_LEAVING');
+		this.client.disconnect();
+	}
 
-    public stopApp(): void {
-        this.client?.send({
-            type: ClientEvents.PLAYER_LEAVING
-        });
-    }
+	private registerHandlers(socket: AppSocket) {
+		socket
+			.onAny((args) => {
+				console.log('Neue Nachricht vom Server');
+				console.log(args);
+			})
+			.on('PLAYER_JOINED', (playerId, name, teamId) => {
+				players.addPlayer(playerId, name, teamId);
+				inputs.addPlayer(playerId, teamId);
+			})
+			.on('PLAYER_LEFT', (playerId) => {
+				players.removePlayer(playerId);
+				inputs.removePlayer(playerId);
+			})
+			.on('PLAYER_POINTS_CHANGED', (playerId, points) => players.setPoints(playerId, points))
+			.on('PLAYER_INPUT_CHANGED', (playerId, input) => inputs.inputChanged(playerId, input))
+			.on('PLAYER_INPUT_LOCKED', (playerId) => inputs.lockedForPlayer(playerId))
+			.on('PLAYER_INPUT_RELEASED', (playerId) => inputs.releasedForPlayer(playerId))
+			.on('INPUTS_LOCKED', () => inputs.locked())
+			.on('INPUTS_RELEASED', () => inputs.released())
+			.on('BUZZER_PRESSED_BY_PLAYER', (playerId, time) => {
+				const currentPlayer = get(players).find((x) => x.id == playerId)!;
 
-    public sendMessage(m: ClientMessage): void {
-        this.client.send(m);
-    }
-
-    private async recieve(m: ServerMessage): Promise<void> {
-        console.log("Neue Nachricht vom Server");
-        console.log(m);
-
-        switch (m.type) {
-            case ServerEvents.PLAYER_SET_ID:
-                currentUserId.set(m.id);
-                isLoggedIn.set(true);
-                break;
-            case ServerEvents.PLAYER_JOINED:
-                players.addPlayer(m.id, m.name, m.teamId);
-                inputs.addPlayer(m.id, m.teamId);
-                break;
-            
-            case ServerEvents.PLAYER_LEFT:
-                players.removePlayer(m.id);
-                inputs.removePlayer(m.id);
-                break;
-
-            case ServerEvents.PLAYER_POINTS_CHANGED:
-                players.setPoints(m.playerId, m.points);
-                break;
-
-            case ServerEvents.PLAYER_INPUT_CHANGED:
-                inputs.inputChanged(m.id, m.input);
-                break;
-            case ServerEvents.PLAYER_INPUT_LOCKED:
-                inputs.lockedForPlayer(m.id);
-                break;
-            case ServerEvents.PLAYER_INPUT_RELEASED:
-                inputs.releasedForPlayer(m.id);
-                break;
-
-            case ServerEvents.INPUTS_LOCKED:
-                inputs.locked();
-                break;
-            case ServerEvents.INPUTS_RELEASED:
-                inputs.released();
-                break;
-
-            case ServerEvents.BUZZER_PRESSED_BY_PLAYER:
-                { const currentPlayer = get(players).find(x => x.id == m.playerId)!;
-                
-                buzzers.playerBuzzed(m.playerId, currentPlayer.teamId, m.time);
-                break; }
-            case ServerEvents.BUZZER_RELEASED:
-                buzzers.clearBuzzing();
-                buzzerSoundPlayed.set(false);
-                isBuzzerLocked.set(false);
-                break;
-            case ServerEvents.BUZZER_LOCKED:
-                isBuzzerLocked.set(true);
-                break;
-
-            case ServerEvents.ANSWER_RIGHT:
-                get(answerRightSound).play();
-                break;
-            case ServerEvents.ANSWER_WRONG:
-                get(answerWrongSound).play();
-                break;
-            case ServerEvents.TEAMS_CHANGED:
-                teamStore.set(m.teams);
-                break;
-
-            case ServerEvents.SERVER_PING:
-                console.log("Player pinged");
-                break;
-            default:
-                throw new Error("Need to implement this shit!");
-        }
-    }
+				buzzers.playerBuzzed(playerId, currentPlayer.teamId, time);
+			})
+			.on('BUZZER_RELEASED', () => {
+				buzzers.clearBuzzing();
+				buzzerSoundPlayed.set(false);
+				isBuzzerLocked.set(false);
+			})
+			.on('BUZZER_LOCKED', () => isBuzzerLocked.set(true))
+			.on('ANSWER_RIGHT', () => get(answerRightSound).play())
+			.on('ANSWER_WRONG', () => get(answerWrongSound).play())
+			.on('TEAMS_CHANGED', (teams) => teamStore.set(teams));
+	}
 }

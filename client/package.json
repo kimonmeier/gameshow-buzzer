@@ -39,6 +39,7 @@
 	"type": "module",
 	"dependencies": {
 		"gameshow-lib": "file:../lib/dist/gameshow-lib-0.0.1.tgz",
-		"howler": "^2.2.4"
+		"howler": "^2.2.4",
+		"socket.io-client": "^4.8.1"
 	}
 }

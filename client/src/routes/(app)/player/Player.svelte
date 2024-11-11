@@ -5,7 +5,6 @@
 	import { inputs, isInputFocused } from '$lib/store/InputStore';
 	import { players } from '$lib/store/PlayerStore';
 	import Icon from '@iconify/svelte';
-	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
 	import { onMount, tick } from 'svelte';
 
 	export let player: PlayerInfo;
@@ -13,10 +12,7 @@
 
 	function onInputChanged() {
 		tick().then(() => {
-			App.getInstance().sendMessage({
-				type: ClientEvents.PLAYER_INPUT_CHANGED,
-				input: value
-			});
+			App.getSocket().emit('PLAYER_INPUT_CHANGED', value);
 
 			inputs.inputChanged(player.id, value);
 		});
@@ -27,10 +23,7 @@
 			return;
 		}
 
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_LOCK_INPUTS,
-			playerId: player.id
-		});
+		App.getSocket().emit('GAMEMASTER_LOCK_INPUTS', player.id);
 	}
 
 	function buzzer() {
@@ -38,9 +31,7 @@
 			return;
 		}
 
-		App.getInstance().sendMessage({
-			type: ClientEvents.PLAYER_BUZZER_PRESSED
-		});
+		App.getSocket().emit('PLAYER_BUZZER_PRESSED');
 	}
 
 	onMount(() => {

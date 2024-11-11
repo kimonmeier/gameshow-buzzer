@@ -1,13 +1,14 @@
 import type { InputInfo } from "$lib/models/Player";
 import { writable, type Readable } from "svelte/store";
 import { createBasicPlayerStore, type BasePlayerStore } from "./PlayerStore";
+import type { PlayerId, TeamId } from "gameshow-lib/Types";
 
 
 interface InputStore extends Readable<InputInfo[]>, BasePlayerStore {
-    inputChanged: (playerId: string, input: string) => void; 
+    inputChanged: (playerId: PlayerId, input: string) => void; 
 }
 
-function create(playerId: string, teamId?: string): InputInfo {
+function create(playerId: PlayerId, teamId?: TeamId): InputInfo {
     return {
         playerId: playerId,
         teamId: teamId,
@@ -22,7 +23,7 @@ function createBuzzerStore(): InputStore {
     return {
         ...createBasicPlayerStore(create, update),  
         subscribe,
-        inputChanged: (playerId: string, input: string) => update(x => {
+        inputChanged: (playerId: PlayerId, input: string) => update(x => {
             const currentPlayer = x.find(z => z.playerId == playerId);
 
             if (currentPlayer!.teamId) {

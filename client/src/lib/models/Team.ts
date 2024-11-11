@@ -1,4 +1,6 @@
+import type { TeamId } from "gameshow-lib/Types";
+
 export interface TeamModel {
-    id: string;
+    id: TeamId;
     name: string;
 }

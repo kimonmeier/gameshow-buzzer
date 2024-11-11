@@ -13,7 +13,7 @@ interface AlertStore extends Readable<AlertMessage | null> {
 }
 
 function createAlertWriteable(): AlertStore {
-    let {set, subscribe} = writable<AlertMessage & { keep: boolean } | null>()
+    const { set, subscribe } = writable<AlertMessage & { keep: boolean } | null>()
     
     let timeout: number | null;
     function clear() {

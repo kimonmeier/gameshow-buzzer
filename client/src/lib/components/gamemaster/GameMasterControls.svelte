@@ -1,38 +1,27 @@
 <script lang="ts">
-	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
 	import App from '$lib/services/GameManager';
 	import { buzzers, isBuzzerLocked } from '$lib/store/BuzzerStore';
 	import { pointsInkrementRightAnswer, pointsInkrementWrongAnswer } from '$lib/store/SettingsStore';
 	import { players } from '$lib/store/PlayerStore';
 
 	function releaseBuzzer() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_RELEASE_BUZZER
-		});
+		App.getSocket().emit('GAMEMASTER_RELEASE_BUZZER');
 	}
 
 	function lockBuzzer() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_LOCK_BUZZER
-		});
+		App.getSocket().emit('GAMEMASTER_LOCK_BUZZER');
 	}
 
 	function releaseInputs() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_RELEASE_INPUTS
-		});
+		App.getSocket().emit('GAMEMASTER_RELEASE_INPUTS');
 	}
 
 	function lockInputs() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_LOCK_INPUTS
-		});
+		App.getSocket().emit('GAMEMASTER_LOCK_INPUTS');
 	}
 
 	function answerIsRight() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_ANSWER_RIGHT
-		});
+		App.getSocket().emit('GAMEMASTER_ANSWER_RIGHT');
 
 		let buzzerInfo = $buzzers.at(0);
 
@@ -40,21 +29,17 @@
 			return;
 		}
 
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER,
-			playerId: buzzerInfo?.playerId,
-			points: $pointsInkrementRightAnswer
-		});
+		App.getSocket().emit(
+			'GAMEMASTER_INCREASE_POINTS_BY_PLAYER',
+			buzzerInfo?.playerId,
+			$pointsInkrementRightAnswer
+		);
 
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_RELEASE_BUZZER
-		});
+		App.getSocket().emit('GAMEMASTER_RELEASE_BUZZER');
 	}
 
 	function answerIsWrong() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_ANSWER_WRONG
-		});
+		App.getSocket().emit('GAMEMASTER_ANSWER_WRONG');
 
 		let buzzerInfo = $buzzers.at(0);
 
@@ -65,16 +50,14 @@
 		$players
 			.filter((x) => x.id != buzzerInfo.playerId)
 			.forEach((player) => {
-				App.getInstance().sendMessage({
-					type: ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER,
-					playerId: player.id,
-					points: $pointsInkrementWrongAnswer
-				});
+				App.getSocket().emit(
+					'GAMEMASTER_INCREASE_POINTS_BY_PLAYER',
+					player.id,
+					$pointsInkrementWrongAnswer
+				);
 			});
 
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_RELEASE_BUZZER
-		});
+		App.getSocket().emit('GAMEMASTER_RELEASE_BUZZER');
 	}
 </script>
 

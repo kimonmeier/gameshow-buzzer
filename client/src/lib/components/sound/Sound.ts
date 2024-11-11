@@ -1,5 +1,5 @@
 import { type HowlOptions, Howl } from 'howler';
-import { readable, type Readable, type Unsubscriber } from 'svelte/store';
+import { type Readable, type Unsubscriber } from 'svelte/store';
 
 declare global {
 	interface HTMLElement {

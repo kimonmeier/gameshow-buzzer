@@ -1,112 +1,78 @@
-import WebSocketClient from "../connection/WebSocketClient";
-import WebSocketConnection from "../connection/WebSocketConnection";
-import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
-import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
-import { ClientMessage } from "gameshow-lib/messages/ClientMessage";
+import { PlayerId, TeamId } from "gameshow-lib/Types";
+import { AppServer, AppSocket } from "./App";
+import { BasicManager } from "./BasicManager";
+import { on } from "events";
 
-export default class PlayerManager {
-    private readonly connection: WebSocketConnection;
+export default class PlayerManager implements BasicManager {
+    private readonly connection: AppServer;
 
-    private players: Map<WebSocketClient, Player> = new Map();
-    private gameProgress: Map<string, number> = new Map();
-    private gameMasterId: string = "";
+    private gameProgress: Map<PlayerId, number> = new Map();
+    private gameMasterId: PlayerId | undefined = undefined;
 
-
-    public constructor (connection: WebSocketConnection) {
+    public constructor (connection: AppServer) {
         this.connection = connection;
     }
 
-    public clearGame(): void {
-        this.gameProgress.clear();
-    }
-
-    public getGamePoints(uuid: string): number {
-        if (!this.gameProgress.has(uuid)) {
-            this.gameProgress.set(uuid, 0);
-        }
-        return this.gameProgress.get(uuid)!;
-    }
-
-    public handleInputs(client: WebSocketClient, m: ClientMessage): void {
-        switch(m.type) {
-            case ClientEvents.PLAYER_CONNECTING:
-                this.players.set(client, {
-                    client,
-                    name: m.name,
-                });
-
-                this.connection.broadcast({
-                    type: ServerEvents.PLAYER_JOINED,
-                    id: client.uuid,
-                    name: m.name,
-                    teamId: m.teamId
-                });
-
-                client.send({
-                    type: ServerEvents.PLAYER_SET_ID,
-                    id: client.uuid
-                })
-                break;
-            case ClientEvents.REQUEST_GAMEMASTER:
-                if (this.gameMasterId != "") {
-                    console.log("Connection closed because there is already a gamemaster logged in")
-                    client.close("Already a gamemaster in the game");
+    public registerSocket(socket: AppSocket, uuid: PlayerId) {
+        socket
+            .on('PLAYER_CONNECTING', (name, teamId, callback) => callback(this.playerConnecting(name, teamId, uuid)))
+            .on('PLAYER_LEAVING', () => this.playerLeaving(uuid))
+            .on('REQUEST_GAMEMASTER', (callback) => callback(this.requestGameMaster(uuid)))
+            .on('GAMEMASTER_DECREASE_POINTS_BY_PLAYER', (playerId, points) => this.decreatePointsOfPlayer(playerId, points))
+            .on('GAMEMASTER_INCREASE_POINTS_BY_PLAYER', (playerId, points) => this.increasePointsOfPlayer(playerId, points))
+            .on('GAMEMASTER_CHANGE_POINTS_BY_PLAYER', (playerId, points) => this.changePointsOfPlayer(playerId, points))
+            .on('disconnect', () => {
+                if (this.gameMasterId != uuid) {
                     return;
                 }
 
-                this.gameMasterId = client.uuid;
-                break;
-            case ClientEvents.PLAYER_LEAVING:
-                this.gameProgress.delete(client.uuid);
-                this.players.delete(client);
-    
-                this.connection.broadcast({
-                    type: ServerEvents.PLAYER_LEFT,
-                    id: client.uuid
-                });
-                break;
-            case ClientEvents.GAMEMASTER_DECREASE_POINTS_BY_PLAYER:
-                const decreasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) - m.points;
-                this.gameProgress.set(m.playerId, decreasedPlayerPoints);
+                this.gameMasterId = undefined;
+            });
+    }
 
-                this.connection.broadcast({
-                    type: ServerEvents.PLAYER_POINTS_CHANGED,
-                    playerId: m.playerId,
-                    points: decreasedPlayerPoints
-                })
-                break;
-            case ClientEvents.GAMEMASTER_INCREASE_POINTS_BY_PLAYER:
-                const increasedPlayerPoints = (this.gameProgress.get(m.playerId) ?? 0) + m.points;
-                this.gameProgress.set(m.playerId, increasedPlayerPoints);
+    public unregisterSocket(Socket: AppSocket, uuid: PlayerId) {
+        throw new Error("Not implemented")
+    }
 
-                this.connection.broadcast({
-                    type: ServerEvents.PLAYER_POINTS_CHANGED,
-                    playerId: m.playerId,
-                    points: increasedPlayerPoints
-                })
-                break;
-            case ClientEvents.GAMEMASTER_CHANGE_POINTS_BY_PLAYER:
-                this.gameProgress.set(m.playerId, m.points);
-                
-                this.connection.broadcast({
-                    type: ServerEvents.PLAYER_POINTS_CHANGED,
-                    playerId: m.playerId,
-                    points: m.points
-                });
-                break;
+    private playerConnecting(name: string, teamId: TeamId | undefined, playerId: PlayerId): PlayerId {
+        this.connection.emit('PLAYER_JOINED', playerId, name, teamId);
+        
+        return playerId;
+    }
+
+    private playerLeaving(playerId: PlayerId): void {
+        this.gameProgress.delete(playerId);
+
+        this.connection.emit('PLAYER_LEFT', playerId);
+    }
+
+    private requestGameMaster(id: PlayerId): boolean {
+        if (this.gameMasterId != undefined) {
+            console.log("Connection closed because there is already a gamemaster logged in")
+            return false;
         }
+
+        this.gameMasterId = id;
+        return true;
     }
 
-    public getPlayerByUuid(uuid: string): Player {
-        return this.players.get(this.connection.clients.find(x => x.uuid == uuid) as WebSocketClient) as Player;
+    private decreatePointsOfPlayer(playerId: PlayerId, points: number): void {
+        const decreasedPlayerPoints = (this.gameProgress.get(playerId) ?? 0) - points;
+        this.gameProgress.set(playerId, decreasedPlayerPoints);
+
+        this.connection.emit('PLAYER_POINTS_CHANGED', playerId, decreasedPlayerPoints);
     }
 
-    public getPlayers(): Player[] {
-        return Array.from(this.players.values());
-    }
-}
+    private increasePointsOfPlayer(playerId: PlayerId, points: number): void {
+        const increasedPlayerPoints = (this.gameProgress.get(playerId) ?? 0) + points;
+        this.gameProgress.set(playerId, increasedPlayerPoints);
 
-export interface Player {
-    client: WebSocketClient;
-    name: string;
+        this.connection.emit('PLAYER_POINTS_CHANGED', playerId, increasedPlayerPoints);
+    }
+
+    private changePointsOfPlayer(playerId: PlayerId, points: number): void {
+        this.gameProgress.set(playerId, points);
+
+        this.connection.emit('PLAYER_POINTS_CHANGED', playerId, points);
+    }
 }

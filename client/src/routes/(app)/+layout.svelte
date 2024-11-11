@@ -15,7 +15,6 @@
 	import buzzerSoundFile from '$lib/assets/buzzer.mp3';
 	import answerRightSoundFile from '$lib/assets/right_answer.wav';
 	import answerWrongSoundFile from '$lib/assets/wrong_answer.wav';
-	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
 	import { isBuzzerLocked } from '$lib/store/BuzzerStore';
 	import { Sound } from '$lib/components/sound/Sound';
 	import Icon from '@iconify/svelte';
@@ -46,9 +45,7 @@
 				return;
 			}
 
-			App.getInstance().sendMessage({
-				type: ClientEvents.PLAYER_BUZZER_PRESSED
-			});
+			App.getSocket().emit('PLAYER_BUZZER_PRESSED');
 		}
 	}
 </script>

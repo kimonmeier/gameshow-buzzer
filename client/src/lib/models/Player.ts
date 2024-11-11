@@ -1,13 +1,15 @@
+import type { PlayerId, TeamId } from "gameshow-lib/Types";
+
 export interface PlayerInfo {
-    id: string;
+    id: PlayerId;
     name: string;
-    teamId?: string;
+    teamId?: TeamId;
     points: number;
 }
 
 export interface BasePlayerInfo {
-    playerId: string;
-    teamId?: string;
+    playerId: PlayerId;
+    teamId?: TeamId;
     isLocked: boolean
 }
 

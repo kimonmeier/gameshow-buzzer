@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
 	import type { TeamModel } from '$lib/models/Team';
 	import App from '$lib/services/GameManager';
 	import { players } from '$lib/store/PlayerStore';
@@ -9,10 +8,7 @@
 	$: playersInTeam = $players.filter((x) => x.teamId == team.id);
 
 	function deleteTeam() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.GAMEMASTER_TEAM_DELETE,
-			teamId: team.id
-		});
+		App.getSocket().emit('GAMEMASTER_TEAM_DELETE', team.id);
 	}
 </script>
 

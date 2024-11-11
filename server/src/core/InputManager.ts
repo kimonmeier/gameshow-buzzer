@@ -1,104 +1,97 @@
-import WebSocketClient from "connection/WebSocketClient";
-import WebSocketConnection from "connection/WebSocketConnection";
-import { ClientEvents } from "gameshow-lib/enums/ClientEvents";
-import { ServerEvents } from "gameshow-lib/enums/ServerEvents";
-import { ClientMessage } from "gameshow-lib/messages/ClientMessage";
+import { PlayerId } from "gameshow-lib/Types";
+import { AppServer, AppSocket } from "./App";
+import { BasicManager } from "./BasicManager";
 
-export default class InputManager {
-    private readonly connection: WebSocketConnection;
-    private readonly buzzerPressed: Map<string, number> = new Map();
+export default class InputManager implements BasicManager {
+    private readonly connection: AppServer;
+    private readonly buzzerPressed: Map<PlayerId, number> = new Map();
     private playerBuzzerLocked: string[] = [];
 
-    public constructor (connection: WebSocketConnection) {
+    public constructor (connection: AppServer) {
         this.connection = connection;
     }
+
+    public registerSocket(socket: AppSocket, uuid: PlayerId): void {
+        socket
+            .on('PLAYER_INPUT_CHANGED', (input) => this.inputChanged(uuid, input))
+            .on('GAMEMASTER_LOCK_INPUTS', (playerId) => this.lockInputs(playerId))
+            .on('GAMEMASTER_RELEASE_INPUTS', (playerId) => this.releaseInputs(playerId))
+            .on('PLAYER_BUZZER_PRESSED', () => this.playerBuzzerPressed(uuid))
+            .on('GAMEMASTER_RELEASE_BUZZER', () => this.releaseBuzzer())
+            .on('GAMEMASTER_LOCK_BUZZER', () => this.lockBuzzer())
+            .on('GAMEMASTER_ANSWER_RIGHT', () => this.answerRight())
+            .on('GAMEMASTER_ANSWER_WRONG', () => this.answerWrong())
+            .on('GAMEMASTER_LOCK_BUZZER_FOR_PLAYER', (playerId) => this.lockBuzzerForPlayer(playerId))
+            .on('GAMEMASTER_RELEASE_BUZZER_FOR_PLAYER', (playerId) => this.releaseBuzzerForPlayer(playerId));
+    }
+
+    public unregisterSocket(Socket: AppSocket, uuid: PlayerId): void {
+        throw new Error("Not implemented");
+    }
     
-    public handleInputs(client: WebSocketClient, m: ClientMessage): void {
-        switch(m.type) {
-            case ClientEvents.PLAYER_INPUT_CHANGED:
-                this.connection.broadcastExcept({
-                    type: ServerEvents.PLAYER_INPUT_CHANGED,
-                    id: client.uuid,
-                    input: m.input
-                }, client);
-                break;
-            case ClientEvents.GAMEMASTER_LOCK_INPUTS:
-                if(m.playerId) {
-                    this.connection.broadcast({
-                        type: ServerEvents.PLAYER_INPUT_LOCKED,
-                        id: m.playerId
-                    });
-                } else {
-                    this.connection.broadcast({
-                        type: ServerEvents.INPUTS_LOCKED
-                    })
-                }
-                break;
-            case ClientEvents.GAMEMASTER_RELEASE_INPUTS:
-                if(m.playerId) {
-                    this.connection.broadcast({
-                        type: ServerEvents.PLAYER_INPUT_RELEASED,
-                        id: m.playerId
-                    });
-                } else {
-                    this.connection.broadcast({
-                        type: ServerEvents.INPUTS_RELEASED
-                    })
+    private inputChanged(playerId: PlayerId, input: string): void {
+        this.connection.emit('PLAYER_INPUT_CHANGED', playerId, input);
+    }
 
-                    this.connection.broadcast({
-                        type: ServerEvents.BUZZER_RELEASED
-                    })
-                }
-                break;
-            case ClientEvents.PLAYER_BUZZER_PRESSED:
-                if (this.buzzerPressed.has(client.uuid)) {
-                    return;
-                }
+    private lockInputs(playerId?: PlayerId): void {
+        if(playerId) {
+            this.connection.emit('PLAYER_INPUT_LOCKED', playerId);
+        } else {
+            this.connection.emit('INPUTS_LOCKED');
+        }
+    }
 
-                let dateNow = Date.now();
-                this.buzzerPressed.set(client.uuid, dateNow);
+    private releaseInputs(playerId?: PlayerId): void {
+        if(playerId) {
+            this.connection.emit('PLAYER_INPUT_RELEASED', playerId);
+        } else {
+            this.connection.emit('INPUTS_RELEASED');
 
-                this.connection.broadcast({
-                    type: ServerEvents.BUZZER_PRESSED_BY_PLAYER,
-                    playerId: client.uuid,
-                    time: dateNow
-                })
-                break;
-            case ClientEvents.GAMEMASTER_RELEASE_BUZZER:
-                this.buzzerPressed.clear();
+            this.connection.emit('BUZZER_RELEASED');
+        }
+    }
 
-                this.connection.broadcastExcept({
-                    type: ServerEvents.BUZZER_RELEASED,
-                },
-                    ...this.connection.clients.filter(x => this.playerBuzzerLocked.find(lockedId => x.uuid == lockedId))
-                )
-                break;
-            case ClientEvents.GAMEMASTER_LOCK_BUZZER:
-                this.connection.broadcast({
-                    type: ServerEvents.BUZZER_LOCKED,
-                })
-                break;
-            case ClientEvents.GAMEMASTER_ANSWER_RIGHT:
-                this.connection.broadcast({
-                    type: ServerEvents.ANSWER_RIGHT
-                });
-                break;
-            case ClientEvents.GAMEMASTER_ANSWER_WRONG:
-                this.connection.broadcast({
-                    type: ServerEvents.ANSWER_WRONG
-                });
-                break;
-            case ClientEvents.GAMEMASTER_LOCK_BUZZER_FOR_PLAYER:
-                this.playerBuzzerLocked.push(m.playerId);
+    private playerBuzzerPressed(playerId: PlayerId): void {
+        let dateNow = Date.now();
+        if (this.buzzerPressed.has(playerId)) {
+            return;
+        }
+        this.buzzerPressed.set(playerId, dateNow);
+        this.connection.emit('BUZZER_PRESSED_BY_PLAYER', playerId, dateNow);
+    }
 
-                this.connection.clients.find(x => x.uuid == m.playerId)?.send({
-                    type: ServerEvents.BUZZER_LOCKED,
-                })
-                break;
-            case ClientEvents.GAMEMASTER_RELEASE_BUZZER_FOR_PLAYER:
-                this.playerBuzzerLocked = this.playerBuzzerLocked.filter(x => x != m.playerId);
-                break;
+    private releaseBuzzer(): void {
+        this.buzzerPressed.clear();
+
+        this.connection.except(this.playerBuzzerLocked).emit('BUZZER_RELEASED');
+        this.connection.emit('BUZZER_LOCKED')
+    }
+
+    private lockBuzzer(): void {
+        this.connection.emit('BUZZER_LOCKED');
+    }
+
+    private answerRight(): void {
+        this.connection.emit('ANSWER_RIGHT');
+    }
+
+    private answerWrong(): void {
+        this.connection.emit('ANSWER_WRONG');
+    }
+
+    private lockBuzzerForPlayer(playerId: PlayerId): void {
+        this.playerBuzzerLocked.push(playerId);
+
+        this.connection.to(playerId).emit('BUZZER_LOCKED');
+    }
+
+    private releaseBuzzerForPlayer(playerId: PlayerId): void {
+        this.playerBuzzerLocked = this.playerBuzzerLocked.filter(x => x != playerId);
+
+        if (this.buzzerPressed.size > 0) {
+            return;
         }
 
+        this.connection.to(playerId).emit('BUZZER_RELEASED');
     }
 }

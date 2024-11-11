@@ -7,7 +7,6 @@
 	import TabControl from '$lib/components/tabcontrol/TabControl.svelte';
 	import { players } from '$lib/store/PlayerStore';
 	import App from '$lib/services/GameManager';
-	import { ClientEvents } from 'gameshow-lib/enums/ClientEvents';
 	import GameMasterTeams from '$lib/components/gamemaster/GameMasterTeams.svelte';
 	import { teamStore } from '$lib/store/TeamStore';
 	import GameMasterTeamPlayerEntry from '$lib/components/gamemaster/GameMasterTeamPlayerEntry.svelte';
@@ -35,16 +34,9 @@
 	let hasSentRequest: boolean = false;
 
 	function login() {
-		App.getInstance().sendMessage({
-			type: ClientEvents.REQUEST_GAMEMASTER
+		App.getSocket().emit('REQUEST_GAMEMASTER', (isLoggedIn) => {
+			loggedIn = isLoggedIn;
 		});
-
-		setTimeout(() => {
-			if (!App.getInstance().IsConnected) {
-				return;
-			}
-			loggedIn = true;
-		}, 200);
 	}
 </script>
 
