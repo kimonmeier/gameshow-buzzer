@@ -7,6 +7,7 @@ import { teamStore } from '$lib/store/TeamStore';
 import { io, type Socket } from 'socket.io-client';
 import type { ServerToClientEvents } from 'gameshow-lib/ServerToClientEvents';
 import type { ClientToServerEvents } from 'gameshow-lib/ClientToServerEvents';
+import { invalidateAll } from '$app/navigation';
 
 export type AppSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -49,14 +50,15 @@ export default class App {
 	public stopApp(): void {
 		this.client.emit('PLAYER_LEAVING');
 		this.client.disconnect();
+
+		invalidateAll().then(() => {
+			console.log('Successfully invalidated all');
+		});
 	}
 
 	private registerHandlers(socket: AppSocket) {
 		socket
-			.onAny((args) => {
-				console.log('Neue Nachricht vom Server');
-				console.log(args);
-			})
+			.on('disconnect', () => this.stopApp())
 			.on('PLAYER_JOINED', (playerId, name, teamId) => {
 				players.addPlayer(playerId, name, teamId);
 				inputs.addPlayer(playerId, teamId);
@@ -85,5 +87,9 @@ export default class App {
 			.on('ANSWER_RIGHT', () => get(answerRightSound).play())
 			.on('ANSWER_WRONG', () => get(answerWrongSound).play())
 			.on('TEAMS_CHANGED', (teams) => teamStore.set(teams));
+
+		socket.io.on('reconnect', (attempt) =>
+			console.log(`Attempt to reconnect for the ${attempt} time!`)
+		);
 	}
 }
