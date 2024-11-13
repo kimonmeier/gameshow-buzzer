@@ -10,6 +10,7 @@
 	import GameMasterTeams from '$lib/components/gamemaster/GameMasterTeams.svelte';
 	import { teamStore } from '$lib/store/TeamStore';
 	import GameMasterTeamPlayerEntry from '$lib/components/gamemaster/GameMasterTeamPlayerEntry.svelte';
+	import { alertStore } from '$lib/store/AlertStore';
 
 	let tabItems: Tab[] = [
 		{
@@ -36,6 +37,10 @@
 	function login() {
 		App.getSocket().emit('REQUEST_GAMEMASTER', (isLoggedIn) => {
 			loggedIn = isLoggedIn;
+
+			if (!isLoggedIn) {
+				alertStore.showError('Already Gamemaster logged in!', true);
+			}
 		});
 	}
 </script>
