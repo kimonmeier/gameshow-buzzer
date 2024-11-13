@@ -16,6 +16,10 @@
 		App.getSocket()
 			.timeout(1000)
 			.emit('PLAYER_CONNECTING', name, team?.id, (error, playerId) => {
+				if (playerId == undefined) {
+					return;
+				}
+
 				$currentUserId = playerId;
 			});
 	}

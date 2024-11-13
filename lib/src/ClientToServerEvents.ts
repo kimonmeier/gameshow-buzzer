@@ -3,7 +3,7 @@ import { PlayerId, TeamId } from "./Types";
 /// These events are send by the client and executed on the server
 export interface ClientToServerEvents {
     /// This event describes when an client tries to connect to the server
-    PLAYER_CONNECTING: (name: string, teamId: TeamId | undefined, callback: (playerId: PlayerId) => void) => void,
+    PLAYER_CONNECTING: (name: string, teamId: TeamId | undefined, callback: (playerId: PlayerId | undefined) => void) => void,
 
     /// This event describes when a client tries to disconnect from the server
     PLAYER_LEAVING: () => void,

@@ -8,6 +8,7 @@ export default class PlayerManager implements BasicManager {
 
     private gameProgress: Map<PlayerId, number> = new Map();
     private gameMasterId: PlayerId | undefined = undefined;
+    private players: PlayerId[] = [];
 
     public constructor (connection: AppServer) {
         this.connection = connection;
@@ -34,14 +35,25 @@ export default class PlayerManager implements BasicManager {
         throw new Error("Not implemented")
     }
 
-    private playerConnecting(name: string, teamId: TeamId | undefined, playerId: PlayerId): PlayerId {
+    private playerConnecting(name: string, teamId: TeamId | undefined, playerId: PlayerId): PlayerId | undefined {
+        if (this.players.find(x => x == playerId)) {
+            return undefined;
+        }
+        
+        this.players.push(playerId);
+
         this.connection.emit('PLAYER_JOINED', playerId, name, teamId);
         
         return playerId;
     }
 
     private playerLeaving(playerId: PlayerId): void {
+        if (!this.players.find(x => x == playerId)) {
+            return;
+        }
+        
         this.gameProgress.delete(playerId);
+        this.players = this.players.filter(x => x != playerId)
 
         this.connection.emit('PLAYER_LEFT', playerId);
     }
