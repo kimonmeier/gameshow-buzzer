@@ -64,7 +64,6 @@ export default class InputManager implements BasicManager {
         this.buzzerPressed.clear();
 
         this.connection.except(this.playerBuzzerLocked).emit('BUZZER_RELEASED');
-        this.connection.emit('BUZZER_LOCKED')
     }
 
     private lockBuzzer(): void {
