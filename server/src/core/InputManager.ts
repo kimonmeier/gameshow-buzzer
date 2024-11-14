@@ -1,14 +1,17 @@
 import { PlayerId } from "gameshow-lib/Types";
 import { AppServer, AppSocket } from "./App";
 import { BasicManager } from "./BasicManager";
+import { HistoryManager } from "./HistoryManager";
 
 export default class InputManager implements BasicManager {
     private readonly connection: AppServer;
     private readonly buzzerPressed: Map<PlayerId, number> = new Map();
+    private readonly historyManager: HistoryManager;
     private playerBuzzerLocked: string[] = [];
 
-    public constructor (connection: AppServer) {
+    public constructor(connection: AppServer, historyManager: HistoryManager) {
         this.connection = connection;
+        this.historyManager = historyManager;
     }
 
     public registerSocket(socket: AppSocket, uuid: PlayerId): void {
@@ -37,7 +40,7 @@ export default class InputManager implements BasicManager {
         if(playerId) {
             this.connection.emit('PLAYER_INPUT_LOCKED', playerId);
         } else {
-            this.connection.emit('INPUTS_LOCKED');
+            this.historyManager.SendAndSaveToHistory('INPUTS_LOCKED');
         }
     }
 
@@ -45,9 +48,9 @@ export default class InputManager implements BasicManager {
         if(playerId) {
             this.connection.emit('PLAYER_INPUT_RELEASED', playerId);
         } else {
-            this.connection.emit('INPUTS_RELEASED');
+            this.historyManager.SendAndSaveToHistory('INPUTS_RELEASED');
 
-            this.connection.emit('BUZZER_RELEASED');
+            this.historyManager.SendAndSaveToHistory('BUZZER_RELEASED');
         }
     }
 
@@ -57,17 +60,18 @@ export default class InputManager implements BasicManager {
             return;
         }
         this.buzzerPressed.set(playerId, dateNow);
-        this.connection.emit('BUZZER_PRESSED_BY_PLAYER', playerId, dateNow);
+        this.historyManager.SendAndSaveToHistory('BUZZER_PRESSED_BY_PLAYER', playerId, dateNow);
     }
 
     private releaseBuzzer(): void {
         this.buzzerPressed.clear();
 
         this.connection.except(this.playerBuzzerLocked).emit('BUZZER_RELEASED');
+        this.historyManager.SaveToHistory('BUZZER_RELEASED');
     }
 
     private lockBuzzer(): void {
-        this.connection.emit('BUZZER_LOCKED');
+        this.historyManager.SendAndSaveToHistory('BUZZER_LOCKED');
     }
 
     private answerRight(): void {

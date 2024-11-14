@@ -1,17 +1,16 @@
 import { PlayerId, TeamId } from "gameshow-lib/Types";
-import { AppServer, AppSocket } from "./App";
-import PlayerManager from "./PlayerManager";
+import { AppSocket } from "./App";
 import { v4 as uuidv4,} from 'uuid';
 import { BasicManager } from "./BasicManager";
-import { on } from "events";
+import { HistoryManager } from "./HistoryManager";
 
 export class TeamManager implements BasicManager {
-    private readonly connection: AppServer;
+    private readonly historyManager: HistoryManager;
 
     private teams: { id: TeamId, name: string }[] = [];
 
-    public constructor(connection: AppServer) {
-        this.connection = connection;
+    public constructor(historyManager: HistoryManager) {
+        this.historyManager = historyManager;
     }
 
     public registerSocket(socket: AppSocket, uuid: PlayerId): void {
@@ -30,12 +29,12 @@ export class TeamManager implements BasicManager {
             name: teamName
         })
 
-        this.connection.emit('TEAMS_CHANGED', this.teams);
+        this.historyManager.SendAndSaveToHistory('TEAMS_CHANGED', this.teams);
     }
 
     private removeTeam(teamId: TeamId): void {
         this.teams = this.teams.filter(x => x.id != teamId);
 
-        this.connection.emit('TEAMS_CHANGED', this.teams);
+        this.historyManager.SendAndSaveToHistory('TEAMS_CHANGED', this.teams);
     }
 }

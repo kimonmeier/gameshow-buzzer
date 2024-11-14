@@ -2,22 +2,24 @@ import { PlayerId, TeamId } from "gameshow-lib/Types";
 import { AppServer, AppSocket } from "./App";
 import { BasicManager } from "./BasicManager";
 import { on } from "events";
+import { HistoryManager } from "./HistoryManager";
 
 export default class PlayerManager implements BasicManager {
     private readonly connection: AppServer;
+    private readonly historyManager: HistoryManager;
 
     private gameProgress: Map<PlayerId, number> = new Map();
     private gameMasterId: PlayerId | undefined = undefined;
     private players: PlayerId[] = [];
 
-    public constructor (connection: AppServer) {
+    public constructor (connection: AppServer, historyManager: HistoryManager) {
         this.connection = connection;
+        this.historyManager = historyManager;
     }
 
     public registerSocket(socket: AppSocket, uuid: PlayerId) {
         socket
             .on('PLAYER_CONNECTING', (name, teamId, callback) => callback(this.playerConnecting(name, teamId, uuid)))
-            .on('PLAYER_LEAVING', () => this.playerLeaving(uuid))
             .on('REQUEST_GAMEMASTER', (callback) => callback(this.requestGameMaster(uuid)))
             .on('GAMEMASTER_DECREASE_POINTS_BY_PLAYER', (playerId, points) => this.decreatePointsOfPlayer(playerId, points))
             .on('GAMEMASTER_INCREASE_POINTS_BY_PLAYER', (playerId, points) => this.increasePointsOfPlayer(playerId, points))
@@ -42,12 +44,12 @@ export default class PlayerManager implements BasicManager {
         
         this.players.push(playerId);
 
-        this.connection.emit('PLAYER_JOINED', playerId, name, teamId);
+        this.historyManager.SendAndSaveToHistory('PLAYER_JOINED', playerId, name, teamId);
         
         return playerId;
     }
 
-    private playerLeaving(playerId: PlayerId): void {
+    public PlayerLeaving(playerId: PlayerId): void {
         if (!this.players.find(x => x == playerId)) {
             return;
         }
@@ -55,7 +57,7 @@ export default class PlayerManager implements BasicManager {
         this.gameProgress.delete(playerId);
         this.players = this.players.filter(x => x != playerId)
 
-        this.connection.emit('PLAYER_LEFT', playerId);
+        this.historyManager.SendAndSaveToHistory('PLAYER_LEFT', playerId);
     }
 
     private requestGameMaster(id: PlayerId): boolean {
@@ -72,19 +74,19 @@ export default class PlayerManager implements BasicManager {
         const decreasedPlayerPoints = (this.gameProgress.get(playerId) ?? 0) - points;
         this.gameProgress.set(playerId, decreasedPlayerPoints);
 
-        this.connection.emit('PLAYER_POINTS_CHANGED', playerId, decreasedPlayerPoints);
+        this.historyManager.SendAndSaveToHistory('PLAYER_POINTS_CHANGED', playerId, decreasedPlayerPoints);
     }
 
     private increasePointsOfPlayer(playerId: PlayerId, points: number): void {
         const increasedPlayerPoints = (this.gameProgress.get(playerId) ?? 0) + points;
         this.gameProgress.set(playerId, increasedPlayerPoints);
 
-        this.connection.emit('PLAYER_POINTS_CHANGED', playerId, increasedPlayerPoints);
+        this.historyManager.SendAndSaveToHistory('PLAYER_POINTS_CHANGED', playerId, increasedPlayerPoints);
     }
 
     private changePointsOfPlayer(playerId: PlayerId, points: number): void {
         this.gameProgress.set(playerId, points);
 
-        this.connection.emit('PLAYER_POINTS_CHANGED', playerId, points);
+        this.historyManager.SendAndSaveToHistory('PLAYER_POINTS_CHANGED', playerId, points);
     }
 }
