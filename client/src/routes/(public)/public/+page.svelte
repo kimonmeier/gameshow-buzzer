@@ -4,6 +4,8 @@
 	import { buzzers } from '$lib/store/BuzzerStore';
 	import { inputs } from '$lib/store/InputStore';
 	import { players } from '$lib/store/PlayerStore';
+	import { onMount } from 'svelte';
+	import { answerRightSoundVolume, answerWrongSoundVolume, buzzerSoundVolume } from '$lib/store/AudioStore';
 
 	$: player = $players.find((x) => x.id == $page.url.searchParams.get('id'))!;
 
@@ -14,6 +16,18 @@
 			.at(0)?.playerId == player?.id;
 	$: buzzerInfo = $buzzers.find((x) => x.playerId == player?.id) as BuzzerInfo;
 	$: inputInfo = $inputs.find((x) => x.playerId == player?.id) as InputInfo;
+
+	onMount(() => {
+		const hasSound = $page.url.searchParams.get('sound') != undefined;
+
+		if (hasSound) {
+			return;
+		}
+
+		$answerRightSoundVolume = 0;
+		$answerWrongSoundVolume = 0;
+		$buzzerSoundVolume = 0;
+	})
 </script>
 
 <div class="bg-transparent flex flex-row items-center justify-center">

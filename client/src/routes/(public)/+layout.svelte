@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import '../../app.css';
 	import App from '$lib/services/GameManager';
@@ -12,11 +11,9 @@
 	import Icon from '@iconify/svelte';
 	import { answerRightSoundVolume, answerWrongSoundVolume, buzzerSoundVolume } from '$lib/store/AudioStore';
 
-	const hasSound = $page.url.searchParams.get('sound') != undefined;
-
-	$buzzerSound = new Sound(buzzerSoundFile, buzzerSoundVolume, { volume: hasSound ? 0.2 : 0.0 });
-	$answerRightSound = new Sound(answerRightSoundFile, answerRightSoundVolume, { volume: hasSound ? 0.4 : 0.0 });
-	$answerWrongSound = new Sound(answerWrongSoundFile, answerWrongSoundVolume, { volume: hasSound ? 0.2 : 0.0 });
+	$buzzerSound = new Sound(buzzerSoundFile, buzzerSoundVolume, { volume: 0.2 });
+	$answerRightSound = new Sound(answerRightSoundFile, answerRightSoundVolume, { volume: 0.4 });
+	$answerWrongSound = new Sound(answerWrongSoundFile, answerWrongSoundVolume, { volume: 0.2 });
 
 	let steuerungVisible: boolean = false;
 
