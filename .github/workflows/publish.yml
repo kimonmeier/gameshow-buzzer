@@ -29,6 +29,7 @@ jobs:
           npm install
           npm run clean
           npm run build
+          cp ./package.json ./dist/package.json
           cd dist
           npm pack
   build-and-push-frontend:
