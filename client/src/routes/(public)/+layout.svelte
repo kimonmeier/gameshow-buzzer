@@ -17,7 +17,7 @@
 	});
 
 	function beforeunload(args: BeforeUnloadEvent) {
-		App.getInstance().stopApp();
+		//App.getInstance().stopApp();
 	}
 </script>
 

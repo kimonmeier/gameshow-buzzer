@@ -7,7 +7,7 @@ import { teamStore } from '$lib/store/TeamStore';
 import { io, type Socket } from 'socket.io-client';
 import type { ServerToClientEvents } from 'gameshow-lib/ServerToClientEvents';
 import type { ClientToServerEvents } from 'gameshow-lib/ClientToServerEvents';
-import { invalidateAll } from '$app/navigation';
+import { goto, invalidateAll } from '$app/navigation';
 
 export type AppSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -48,17 +48,22 @@ export default class App {
 	}
 
 	public stopApp(): void {
-		this.client.emit('PLAYER_LEAVING');
 		this.client.disconnect();
 
 		invalidateAll().then(() => {
 			console.log('Successfully invalidated all');
+			goto('login').then(() => {
+				console.log("Rerouted to login!")
+			});
 		});
 	}
 
 	private registerHandlers(socket: AppSocket) {
 		socket
-			.on('disconnect', () => this.stopApp())
+			.on('disconnect', () => {
+				console.log('Disconnected');
+				this.stopApp();
+			})
 			.on('PLAYER_JOINED', (playerId, name, teamId) => {
 				players.addPlayer(playerId, name, teamId);
 				inputs.addPlayer(playerId, teamId);
@@ -91,5 +96,6 @@ export default class App {
 		socket.io.on('reconnect', (attempt) =>
 			console.log(`Attempt to reconnect for the ${attempt} time!`)
 		);
+		socket.io.on('error', (err) => console.log('Error occured', err));
 	}
 }

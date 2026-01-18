@@ -5,9 +5,6 @@ export interface ClientToServerEvents {
     /// This event describes when an client tries to connect to the server
     PLAYER_CONNECTING: (name: string, teamId: TeamId | undefined, callback: (playerId: PlayerId | undefined) => void) => void,
 
-    /// This event describes when a client tries to disconnect from the server
-    PLAYER_LEAVING: () => void,
-
     /// This event describes what happens when the gamemaster releases the buzzer
     GAMEMASTER_RELEASE_BUZZER: () => void,
 

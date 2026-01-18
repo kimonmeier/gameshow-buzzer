@@ -3,9 +3,9 @@
 	import Select from '$lib/components/select/Select.svelte';
 	import type { TeamModel } from '$lib/models/Team';
 	import App from '$lib/services/GameManager';
+	import { isInputFocused } from '$lib/store/InputStore';
 	import { currentUserId } from '$lib/store/LoginStore';
 	import { teamStore } from '$lib/store/TeamStore';
-	import type { PlayerId } from 'gameshow-lib/Types';
 
 	let name: string;
 	let team: TeamModel;
@@ -30,7 +30,13 @@
 >
 	<h1 class="font-bold p-10">Login</h1>
 	<FormField label="Name">
-		<input class="bg-slate-400 rounded-xl px-2" bind:value={name} placeholder="Name..." />
+		<input
+			class="bg-slate-400 rounded-xl px-2"
+			bind:value={name}
+			placeholder="Name..."
+			on:focusin={() => ($isInputFocused = true)}
+			on:focusout={() => ($isInputFocused = false)}
+		/>
 	</FormField>
 	{#if $teamStore.length > 0}
 		<FormField label="Team">

@@ -1,14 +1,13 @@
 import { PlayerId } from "gameshow-lib/Types";
 import { AppServer, AppSocket } from "./App";
 import { BasicManager } from "./BasicManager";
-import { EventNames, EventParams } from "socket.io/dist/typed-events";
 import { ServerToClientEvents } from "gameshow-lib/ServerToClientEvents";
 
-type EventType = EventNames<ServerToClientEvents>
+type EventType = keyof ServerToClientEvents;
 // Define a type for the history entries
 type EventHistoryEntry<Ev extends EventType> = {
-  event: Ev;
-  args: EventParams<ServerToClientEvents, Ev>;
+	event: Ev;
+	args: unknown[];
 };
 
 
@@ -36,12 +35,12 @@ export class HistoryManager implements BasicManager {
        
     }
 
-    public SendAndSaveToHistory<Ev extends EventType>(ev: Ev, ...args: EventParams<ServerToClientEvents, Ev>) {
+    public SendAndSaveToHistory<Ev extends EventType>(ev: Ev,  ...args: unknown[]) {
         this.SaveToHistory(ev, ...args);
-        this.connection.emit(ev, ...args);
+        this.connection.emit(ev, ...(args as any));
     }
 
-    public SaveToHistory<Ev extends EventType>(ev: Ev, ...args: EventParams<ServerToClientEvents, Ev>) {
+    public SaveToHistory<Ev extends EventType>(ev: Ev, ...args: unknown[]) {
         this.eventHistory.push({
             event: ev,
             args: args
