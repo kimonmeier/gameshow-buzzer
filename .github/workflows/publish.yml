@@ -32,6 +32,11 @@ jobs:
           cp ./package.json ./dist/package.json
           cd dist
           npm pack
+      - name: Upload library artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gameshow-lib
+          path: lib/dist/gameshow-lib-0.0.1.tgz
   build-and-push-frontend:
     runs-on: ubuntu-latest
     needs: build-libary
@@ -45,6 +50,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Download library artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gameshow-lib
+          path: lib/dist
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -101,6 +111,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Download library artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gameshow-lib
+          path: lib/dist
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
