@@ -32,7 +32,7 @@
 	}
 
 	function copyLinkForObs() {
-		navigator.clipboard.writeText(location.host + '/buzzer/public?id=' + player.id);
+		navigator.clipboard.writeText(location.host + '/public?id=' + player.id);
 	}
 
 	function changeBuzzerLockState() {
